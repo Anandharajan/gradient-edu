@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradient · CS3491 AI & ML</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#58CC02;--green-d:#58A700;--blue:#1CB0F6;--blue-d:#1899D6;--yellow:#FFC800;--orange:#FF9600;
+  --red:#FF4B4B;--red-d:#EA2B2B;--purple:#CE82FF;--eel:#4B4B4B;--wolf:#777;--hare:#AFAFAF;--swan:#E5E5E5;
+  --polar:#F7F7F7;--snow:#fff;--green-l:#D7FFB8;--red-l:#FFDFE0;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Nunito,"DIN Round",system-ui,sans-serif;color:var(--eel);background:var(--snow)}
+button{font-family:inherit}
+.top{position:sticky;top:0;z-index:5;background:var(--snow);border-bottom:2px solid var(--swan);
+  display:flex;align-items:center;gap:18px;padding:10px 20px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:900;font-size:26px;color:var(--green);letter-spacing:-.5px;cursor:pointer}
+.stat{display:flex;align-items:center;gap:5px;font-weight:800;font-size:17px}
+.spacer{flex:1}
+.nav a{font-weight:800;color:var(--wolf);text-decoration:none;text-transform:uppercase;font-size:14px;margin-left:14px;cursor:pointer}
+.nav a.on{color:var(--blue)}
+main{max-width:760px;margin:0 auto;padding:24px 16px 80px}
+.btn{border:2px solid transparent;border-radius:16px;padding:12px 22px;font-weight:800;font-size:15px;text-transform:uppercase;
+  letter-spacing:.6px;cursor:pointer;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-d);transition:transform .05s}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.btn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-d)}
+.btn.red{background:var(--red);box-shadow:0 4px 0 var(--red-d)}
+.btn.ghost{background:var(--snow);color:var(--blue);border-color:var(--swan);box-shadow:0 4px 0 var(--swan)}
+.btn[disabled]{background:var(--swan);color:var(--hare);box-shadow:0 4px 0 #ccc;cursor:default}
+.unit{border-radius:16px;color:#fff;padding:16px 20px;margin:28px 0 10px;display:flex;justify-content:space-between;align-items:center}
+.unit h2{margin:0;font-size:22px;font-weight:900}.unit p{margin:2px 0 0;font-weight:700;opacity:.92}
+.path{display:flex;flex-direction:column;align-items:center;gap:14px;padding:10px 0}
+.node{width:72px;height:68px;border-radius:50%;border:none;cursor:pointer;font-size:28px;color:#fff;position:relative;
+  box-shadow:0 7px 0 rgba(0,0,0,.2)}
+.node:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.node.done::after{content:"✓";position:absolute;right:-4px;top:-4px;background:var(--yellow);color:#fff;border-radius:50%;
+  width:24px;height:24px;font-size:15px;line-height:24px;font-weight:900}
+.node.lab{border-radius:18px;width:84px}
+.node.locked{background:var(--swan)!important;box-shadow:0 7px 0 #ccc;color:var(--hare)}
+.nlabel{font-weight:800;font-size:13px;color:var(--wolf);margin-top:-6px;text-align:center;max-width:180px}
+.card{border:2px solid var(--swan);border-radius:16px;padding:20px;margin:14px 0}
+.bar{height:16px;background:var(--swan);border-radius:10px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--green);border-radius:10px;transition:width .3s}
+.opt{display:block;width:100%;text-align:left;border:2px solid var(--swan);border-radius:14px;padding:14px 16px;margin:10px 0;
+  font-weight:700;font-size:16px;background:#fff;cursor:pointer;box-shadow:0 3px 0 var(--swan);color:var(--eel)}
+.opt.sel{border-color:var(--blue);background:#DDF4FF;color:var(--blue-d);box-shadow:0 3px 0 var(--blue)}
+.opt.right{border-color:var(--green);background:var(--green-l)}.opt.wrong{border-color:var(--red);background:var(--red-l)}
+.banner{position:fixed;left:0;right:0;bottom:0;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;
+  font-weight:900;font-size:20px;border-top:2px solid var(--swan);background:#fff}
+.banner.ok{background:var(--green-l);color:var(--green-d)}.banner.bad{background:var(--red-l);color:var(--red-d)}
+.video{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:var(--polar);border:2px solid var(--swan)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .soon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:800;color:var(--wolf)}
+h1{font-weight:900;font-size:28px;margin:8px 0}
+.muted{color:var(--wolf);font-weight:600}
+canvas{max-width:100%;border:2px solid var(--swan);border-radius:14px;touch-action:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-weight:800;font-size:12px;background:var(--polar);border:2px solid var(--swan)}
+table{border-collapse:collapse;width:100%}td,th{padding:8px;border-bottom:2px solid var(--swan);text-align:left;font-weight:700}
+input[type=text],input[type=password]{font-family:inherit;font-size:16px;border:2px solid var(--swan);border-radius:12px;padding:10px 12px;background:var(--polar);width:100%}
+input[type=range]{width:100%;accent-color:var(--green)}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--yellow);color:#fff;font-weight:900;
+  padding:10px 18px;border-radius:14px;box-shadow:0 4px 0 #E5A800;z-index:9}
+code{background:var(--polar);padding:2px 6px;border-radius:6px}
+@media(max-width:560px){.nav a{margin-left:8px;font-size:12px}.brand span{display:none}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="brand" onclick="go('home')" title="Gradient home">
+    <svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="14" width="44" height="38" rx="14" fill="#58CC02"/><rect x="10" y="44" width="44" height="8" rx="4" fill="#58A700"/><circle cx="24" cy="31" r="7" fill="#fff"/><circle cx="40" cy="31" r="7" fill="#fff"/><circle cx="25" cy="32" r="3.5" fill="#4B4B4B"/><circle cx="41" cy="32" r="3.5" fill="#4B4B4B"/><path d="M26 42q6 4 12 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><line x1="32" y1="14" x2="32" y2="5" stroke="#58A700" stroke-width="3"/><circle cx="32" cy="5" r="4" fill="#FFC800"/></svg>
+    <span>gradient</span>
+  </div>
+  <div class="nav"><a id="n-home" onclick="go('home')">Learn</a><a id="n-progress" onclick="go('progress')">Progress</a><a href="teacher.html">Teacher</a></div>
+  <div class="spacer"></div>
+  <div class="stat" title="Day streak">🔥 <span id="streak">0</span></div>
+  <div class="stat" title="XP">⚡ <span id="xp">0</span></div>
+  <div class="stat" title="Hearts">❤️ <span id="hearts">5</span></div>
+</div>
+<main id="view"></main>
+
+<script src="content.js"></script>
+<script src="config.js"></script>
+<script>
+// ---------- state (browser-only; wrapped for private modes) ----------
+const KEY = "gradient-cs3491";
+let S = { xp: 0, hearts: 5, done: {}, quiz: {}, streak: 0, last: "" };
+try { S = Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} paintTop(); }
+function paintTop() { $("#xp").textContent = S.xp; $("#hearts").textContent = S.hearts; $("#streak").textContent = S.streak; }
+function touchStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  if (S.last === today) return;
+  const y = new Date(Date.now() - 864e5).toISOString().slice(0, 10);
+  S.streak = S.last === y ? S.streak + 1 : 1; S.last = today;
+}
+const $ = (q) => document.querySelector(q);
+const V = () => $("#view");
+const C = window.COURSE, CFG = window.GRADIENT_CONFIG;
+function toast(t) { const d = document.createElement("div"); d.className = "toast"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1600); }
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+
+// ---------- routing ----------
+function go(r) { location.hash = r; }
+window.addEventListener("hashchange", route);
+function route() {
+  const h = location.hash.slice(1) || "home";
+  document.querySelectorAll(".nav a").forEach((a) => a.classList.remove("on"));
+  const [k, arg] = h.split("-");
+  window.scrollTo(0, 0);
+  if (k === "lesson") return lesson(arg);
+  if (k === "lab") return lab(+arg);
+  if (k === "sandbox") return sandbox(arg);
+  if (k === "progress") { $("#n-progress").classList.add("on"); return progress(); }
+  $("#n-home").classList.add("on"); home();
+}
+
+// ---------- home: skill path ----------
+function home() {
+  const offs = [0, 60, 90, 60, 0, -60, -90, -60];
+  let html = `<h1>CS3491 · Artificial Intelligence & Machine Learning</h1>
+  <p class="muted">Watch → learn → play → code. Every lab you push to GitHub is graded automatically.</p>`;
+  C.units.forEach((u) => {
+    const done = u.lessons.filter((l) => S.done[l.id]).length;
+    html += `<div class="unit" style="background:${u.color}"><div><p>UNIT ${u.n} · ${u.co}</p><h2>${esc(u.title)}</h2>
+      <p>${done}/${u.lessons.length} lessons</p></div><a class="btn ghost" href="${C.channel}" target="_blank" rel="noopener">▶ Playlist</a></div><div class="path">`;
+    let i = 0;
+    const items = [];
+    u.lessons.forEach((l) => { items.push({ t: "lesson", l }); if (l.lab) items.push({ t: "lab", n: l.lab }); });
+    items.splice(Math.min(3, items.length), 0, { t: "sandbox", s: u.sandbox });
+    items.forEach((it) => {
+      const x = offs[i++ % offs.length];
+      if (it.t === "lesson") {
+        const d = S.done[it.l.id] ? "done" : "";
+        html += `<div style="transform:translateX(${x}px);display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="node ${d}" style="background:${u.color}" onclick="go('lesson-${it.l.id}')" aria-label="${esc(it.l.title)}">★</button>
+          <div class="nlabel">${esc(it.l.title)}</div></div>`;
+      } else if (it.t === "lab") {
+        const d = S.done["lab" + it.n] ? "done" : "";
+        html += `<div style="transform:translateX(${x}px);display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="node lab ${d}" style="background:var(--yellow);box-shadow:0 7px 0 #E5A800" onclick="go('lab-${it.n}')" aria-label="Lab ${it.n}">🏰</button>
+          <div class="nlabel">Lab ${it.n}: ${esc(C.labs[it.n])}</div></div>`;
+      } else {
+        html += `<div style="transform:translateX(${x}px);display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="node" style="background:var(--blue)" onclick="go('sandbox-${it.s}')" aria-label="Sandbox">🎮</button>
+          <div class="nlabel">Play: ${SANDBOX_TITLES[it.s]}</div></div>`;
+      }
+    });
+    html += `</div>`;
+  });
+  V().innerHTML = html;
+}
+
+// ---------- lesson: notes → video → quiz ----------
+function findLesson(id) { for (const u of C.units) for (const l of u.lessons) if (l.id === id) return [u, l]; }
+function lesson(id) {
+  const [u, l] = findLesson(id);
+  let step = 0, picked = null, correct = 0;
+  const steps = 2 + l.quiz.length;
+  function paint() {
+    const pct = (100 * step) / steps;
+    let body = `<div class="row" style="margin-bottom:16px"><button class="btn ghost" onclick="go('home')">✕</button>
+      <div class="bar" style="flex:1"><i style="width:${pct}%"></i></div></div>`;
+    if (step === 0) {
+      body += `<span class="pill">${u.co} · Unit ${u.n}</span><h1>${esc(l.title)}</h1><div class="card" style="font-size:18px;line-height:1.55">${esc(l.notes)}</div>`;
+      body += `<div class="banner"><span></span><button class="btn" onclick="next()">Continue</button></div>`;
+    } else if (step === 1) {
+      body += `<h1>Watch the lesson</h1><div class="video">${l.video
+        ? `<iframe src="https://www.youtube-nocookie.com/embed/${esc(l.video)}" allowfullscreen title="${esc(l.title)}"></iframe>`
+        : `<div class="soon">🎬 Video coming soon<br><a href="${C.channel}" target="_blank" rel="noopener">Subscribe to the channel</a></div>`}</div>`;
+      body += `<div class="banner"><span></span><button class="btn" onclick="next()">Start quiz</button></div>`;
+    } else {
+      const q = l.quiz[step - 2];
+      body += `<h1 style="font-size:24px">${esc(q.q)}</h1>`;
+      q.a.forEach((a, i) => { body += `<button class="opt ${picked === i ? "sel" : ""}" onclick="pick(${i})">${esc(a)}</button>`; });
+      body += `<div class="banner" id="ban"><span></span><button class="btn" ${picked === null ? "disabled" : ""} onclick="check()">Check</button></div>`;
+    }
+    V().innerHTML = body;
+  }
+  window.next = () => { step++; picked = null; if (step >= steps) return finish(); paint(); };
+  window.pick = (i) => { picked = i; paint(); };
+  window.check = () => {
+    const q = l.quiz[step - 2], ok = picked === q.c;
+    document.querySelectorAll(".opt").forEach((b, i) => { if (i === q.c) b.classList.add("right"); else if (i === picked) b.classList.add("wrong"); b.onclick = null; });
+    if (ok) correct++; else { S.hearts = Math.max(0, S.hearts - 1); save(); }
+    $("#ban").className = "banner " + (ok ? "ok" : "bad");
+    $("#ban").innerHTML = `<span>${ok ? "Nicely done! 🎉" : "Correct answer: " + esc(q.a[q.c])}</span><button class="btn ${ok ? "" : "red"}" onclick="next()">Continue</button>`;
+  };
+  function finish() {
+    const score = Math.round((100 * correct) / l.quiz.length);
+    const pass = score >= 70;
+    if (pass && !S.done[l.id]) { S.xp += 10 + 5 * correct; toast("+" + (10 + 5 * correct) + " XP"); }
+    if (pass) S.done[l.id] = true;
+    S.quiz[l.id] = Math.max(S.quiz[l.id] || 0, score);
+    if (S.hearts === 0) S.hearts = 5;
+    touchStreak(); save();
+    V().innerHTML = `<div style="text-align:center;padding-top:40px"><div style="font-size:80px">${pass ? "🏆" : "💪"}</div>
+      <h1 style="color:${pass ? "var(--yellow)" : "var(--orange)"}">${pass ? "Lesson complete!" : "Almost there!"}</h1>
+      <p class="muted" style="font-size:18px">Quiz score ${score}% · ${pass ? "you can attempt the lab" : "score 70% to complete the lesson"}</p>
+      <div class="row" style="justify-content:center;margin-top:24px">${l.lab ? `<button class="btn blue" onclick="go('lab-${l.lab}')">Go to Lab ${l.lab}</button>` : ""}
+      <button class="btn" onclick="${pass ? "go('home')" : `lesson('${l.id}')`}">${pass ? "Continue" : "Try again"}</button></div></div>`;
+  }
+  paint();
+}
+
+// ---------- lab castle ----------
+function lab(n) {
+  const slug = C.labSlugs[n], repo = `${CFG.repoPrefix}-${String(n).padStart(2, "0")}-${slug}`;
+  const invite = CFG.classroomLinks[n];
+  const unit = C.units.find((u) => u.lessons.some((l) => l.lab === n));
+  V().innerHTML = `<button class="btn ghost" onclick="go('home')">← Back</button>
+  <span class="pill" style="margin-left:10px">${unit ? unit.co : ""} · Lab ${n}</span>
+  <h1>🏰 Lab ${n}: ${esc(C.labs[n])}</h1>
+  <div class="card"><h3 style="margin-top:0">Your quest</h3><ol style="font-weight:700;line-height:1.9">
+    <li>▶ Watch the lab walkthrough on <a href="${C.channel}" target="_blank" rel="noopener">YouTube</a></li>
+    <li>Click <b>Start lab</b> → GitHub creates your private repo <code>${repo}-&lt;you&gt;</code></li>
+    <li>Implement <code>src/lab${String(n).padStart(2, "0")}.py</code>, run <code>pytest -q</code> or <code>gradient-edu check</code></li>
+    <li>Fill <code>REPORT.md</code> (Aim, Algorithm, Observations, Result)</li>
+    <li><code>git push</code> → marks appear in <code>GRADE.md</code> within ~15 min. Push again to improve!</li></ol>
+    <div class="row">${invite ? `<a class="btn" href="${invite}" target="_blank" rel="noopener">Start lab</a>`
+      : `<button class="btn" disabled title="Teacher will share the invite link">Start lab (link coming)</button>`}
+    <button class="btn ghost" onclick="S.done['lab${n}']=true;S.xp+=50;save();toast('+50 XP');go('home')">I've pushed my lab</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Marks (100)</h3><table>
+    <tr><td>Hidden tests (correctness)</td><td>50</td></tr><tr><td>Public tests + code quality</td><td>10</td></tr>
+    <tr><td>REPORT.md observations</td><td>15</td></tr><tr><td>Viva voce (teacher)</td><td>15</td></tr><tr><td>On-time submission</td><td>10</td></tr></table></div>`;
+}
+
+// ---------- progress / student dashboard ----------
+function progress() {
+  const coRows = C.units.map((u) => {
+    const qs = u.lessons.map((l) => S.quiz[l.id] || 0), avg = Math.round(qs.reduce((a, b) => a + b, 0) / qs.length);
+    return `<tr><td>${u.co}</td><td>${esc(u.title)}</td><td style="width:45%"><div class="bar"><i style="width:${avg}%;background:${u.color}"></i></div></td><td>${avg}%</td></tr>`;
+  }).join("");
+  V().innerHTML = `<h1>My progress</h1>
+  <div class="row"><span class="pill">⚡ ${S.xp} XP</span><span class="pill">🔥 ${S.streak}-day streak</span>
+  <span class="pill">📗 ${Object.keys(S.done).filter((k) => !k.startsWith("lab")).length} lessons</span></div>
+  <div class="card"><h3 style="margin-top:0">Quiz mastery by course outcome</h3><table>${coRows}</table></div>
+  <div class="card"><h3 style="margin-top:0">My lab marks from GitHub</h3>
+    <p class="muted">Your lab repos are private, so enter your GitHub username and a <b>read-only fine-grained token</b>
+    (Repository access: your CS3491 repos · Contents: read). It is used only in this browser and never stored.</p>
+    <div class="row"><input id="ghu" type="text" placeholder="GitHub username" style="flex:1">
+    <input id="ght" type="password" placeholder="Token (github_pat_…)" style="flex:2"></div>
+    <div class="row" style="margin-top:12px"><button class="btn blue" onclick="loadGrades()">Load my marks</button>
+    <button class="btn ghost" onclick="demoGrades()">Show demo</button></div><div id="grades"></div></div>`;
+}
+async function loadGrades() {
+  const u = $("#ghu").value.trim(), t = $("#ght").value.trim(), out = $("#grades");
+  if (!u || !t) { out.innerHTML = `<p class="muted">Enter both fields.</p>`; return; }
+  out.innerHTML = `<p class="muted">Loading…</p>`;
+  const rows = [];
+  for (let n = 1; n <= 12; n++) {
+    const repo = `${CFG.repoPrefix}-${String(n).padStart(2, "0")}-${C.labSlugs[n]}-${u}`;
+    try {
+      const r = await fetch(`https://api.github.com/repos/${CFG.org}/${repo}/contents/.gradient/results.json`,
+        { headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github.raw+json" } });
+      rows.push(r.ok ? Object.assign({ lab: n }, await r.json()) : { lab: n, missing: true });
+    } catch (e) { rows.push({ lab: n, missing: true }); }
+  }
+  renderGrades(rows);
+}
+function demoGrades() {
+  renderGrades(Array.from({ length: 12 }, (_, i) => i < 7
+    ? { lab: i + 1, auto_total: 60 + ((i * 7) % 25), provisional_percent: Math.round((100 * (60 + ((i * 7) % 25))) / 85), provisional_grade: ["A+", "O", "A", "O", "A+", "B+", "O"][i], co: C.units.find((u) => u.lessons.some((l) => l.lab === i + 1)).co }
+    : { lab: i + 1, missing: true }));
+}
+function renderGrades(rows) {
+  $("#grades").innerHTML = `<table style="margin-top:12px"><tr><th>Lab</th><th>Title</th><th>Auto marks</th><th>Grade</th></tr>${rows.map((r) =>
+    `<tr><td>${r.lab}</td><td>${esc(C.labs[r.lab])}</td><td>${r.missing ? "❌ not submitted" : `✅ ${r.auto_total}/85 (${r.provisional_percent}%)`}</td><td>${r.missing ? "-" : r.provisional_grade}</td></tr>`).join("")}</table>
+    <p class="muted">Completed ${rows.filter((r) => !r.missing).length}/12. Viva marks are added by your teacher.</p>`;
+}
+
+// ---------- sandboxes ----------
+const SANDBOX_TITLES = { astar: "A* path finder", bayes: "Bayes' rule slider", regression: "Gradient descent", kmeans: "K-means", perceptron: "Perceptron" };
+function sandbox(k) {
+  V().innerHTML = `<button class="btn ghost" onclick="go('home')">← Back</button><h1>🎮 ${SANDBOX_TITLES[k]}</h1><div id="sb"></div>`;
+  ({ astar: sbAstar, bayes: sbBayes, regression: sbRegression, kmeans: sbKmeans, perceptron: sbPerceptron })[k]($("#sb"));
+  if (!S.done["sb-" + k]) { S.done["sb-" + k] = true; S.xp += 5; save(); }
+}
+function sbAstar(el) {
+  const N = 16, Z = 30;
+  let walls = new Set(), start = [1, 1], goal = [14, 14];
+  el.innerHTML = `<p class="muted">Click cells to draw walls. Compare how many nodes BFS and A* expand.</p>
+  <canvas id="cv" width="${N * Z}" height="${N * Z}"></canvas><div class="row" style="margin:12px 0">
+  <button class="btn" onclick="runS('astar')">Run A*</button><button class="btn blue" onclick="runS('bfs')">Run BFS</button>
+  <button class="btn ghost" onclick="clr()">Clear</button></div><p id="info" style="font-weight:800"></p>`;
+  const cv = $("#cv"), g = cv.getContext("2d");
+  const key = (x, y) => x + "," + y;
+  function draw(exp = new Set(), path = []) {
+    for (let x = 0; x < N; x++) for (let y = 0; y < N; y++) {
+      const k = key(x, y);
+      g.fillStyle = walls.has(k) ? "#4B4B4B" : path.includes(k) ? "#FFC800" : exp.has(k) ? "#DDF4FF" : "#fff";
+      g.fillRect(x * Z, y * Z, Z - 1, Z - 1);
+    }
+    g.fillStyle = "#58CC02"; g.fillRect(start[0] * Z, start[1] * Z, Z - 1, Z - 1);
+    g.fillStyle = "#FF4B4B"; g.fillRect(goal[0] * Z, goal[1] * Z, Z - 1, Z - 1);
+  }
+  cv.onclick = (e) => { const r = cv.getBoundingClientRect(), s = cv.width / r.width;
+    const x = Math.floor(((e.clientX - r.left) * s) / Z), y = Math.floor(((e.clientY - r.top) * s) / Z), k = key(x, y);
+    if (k === key(...start) || k === key(...goal)) return; walls.has(k) ? walls.delete(k) : walls.add(k); draw(); };
+  window.clr = () => { walls = new Set(); draw(); $("#info").textContent = ""; };
+  window.runS = (algo) => {
+    const h = (x, y) => Math.abs(x - goal[0]) + Math.abs(y - goal[1]);
+    const open = [[algo === "astar" ? h(...start) : 0, 0, start, [key(...start)]]], seen = new Set(), exp = new Set();
+    let order = 0;
+    while (open.length) {
+      open.sort((a, b) => a[0] - b[0] || b[3].length - a[3].length || a[1] - b[1]);
+      const [, , [x, y], path] = open.shift(), k = key(x, y);
+      if (seen.has(k)) continue; seen.add(k); exp.add(k);
+      if (x === goal[0] && y === goal[1]) { draw(exp, path); $("#info").textContent = `${algo.toUpperCase()}: path length ${path.length - 1}, nodes expanded ${exp.size}`; return; }
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const nx = x + dx, ny = y + dy, nk = key(nx, ny);
+        if (nx < 0 || ny < 0 || nx >= N || ny >= N || walls.has(nk) || seen.has(nk)) continue;
+        const gcost = path.length;
+        open.push([algo === "astar" ? gcost + h(nx, ny) : gcost, ++order, [nx, ny], [...path, nk]]);
+      }
+    }
+    draw(exp); $("#info").textContent = "No path!";
+  };
+  draw();
+}
+function sbBayes(el) {
+  el.innerHTML = `<p class="muted">A disease test: change the prior and test accuracy, see the posterior P(disease | positive).</p>
+  <div class="card"><label>Prior P(disease): <b id="pv"></b></label><input id="p" type="range" min="0.001" max="0.5" step="0.001" value="0.01">
+  <label>Sensitivity P(+ | disease): <b id="sv"></b></label><input id="s" type="range" min="0.5" max="1" step="0.01" value="0.99">
+  <label>False positive rate P(+ | healthy): <b id="fv"></b></label><input id="f" type="range" min="0" max="0.3" step="0.005" value="0.05"></div>
+  <div class="card" style="text-align:center"><div class="muted">Posterior P(disease | +)</div><div id="post" style="font-size:48px;font-weight:900;color:var(--blue)"></div>
+  <div class="bar"><i id="pb"></i></div></div>`;
+  const upd = () => { const p = +$("#p").value, s = +$("#s").value, f = +$("#f").value, post = (s * p) / (s * p + f * (1 - p));
+    $("#pv").textContent = p; $("#sv").textContent = s; $("#fv").textContent = f; $("#post").textContent = (100 * post).toFixed(1) + "%"; $("#pb").style.width = 100 * post + "%"; };
+  el.querySelectorAll("input").forEach((i) => (i.oninput = upd)); upd();
+}
+function sbRegression(el) {
+  el.innerHTML = `<p class="muted">Click to add points, then watch gradient descent fit a line. Try a large learning rate!</p>
+  <canvas id="cv" width="480" height="320"></canvas><label>Learning rate: <b id="lrv"></b></label><input id="lr" type="range" min="0.01" max="2.2" step="0.01" value="0.3">
+  <div class="row"><button class="btn" onclick="gd()">Run GD</button><button class="btn ghost" onclick="pts=[];w=[0,0];draw()">Clear</button></div><p id="info" style="font-weight:800"></p>`;
+  const cv = $("#cv"), g = cv.getContext("2d");
+  window.pts = Array.from({ length: 12 }, (_, i) => [i / 11, 0.2 + 0.6 * (i / 11) + (Math.random() - 0.5) * 0.15]); window.w = [0, 0];
+  window.draw = () => { g.clearRect(0, 0, 480, 320); g.fillStyle = "#1CB0F6";
+    pts.forEach(([x, y]) => { g.beginPath(); g.arc(x * 480, 320 - y * 320, 6, 0, 7); g.fill(); });
+    g.strokeStyle = "#FF9600"; g.lineWidth = 4; g.beginPath(); g.moveTo(0, 320 - w[0] * 320); g.lineTo(480, 320 - (w[0] + w[1]) * 320); g.stroke(); };
+  cv.onclick = (e) => { const r = cv.getBoundingClientRect(); pts.push([(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height]); draw(); };
+  $("#lr").oninput = () => ($("#lrv").textContent = $("#lr").value); $("#lr").oninput();
+  window.gd = () => { const lr = +$("#lr").value; let it = 0; w = [0, 0];
+    const t = setInterval(() => { let g0 = 0, g1 = 0, L = 0;
+      pts.forEach(([x, y]) => { const e = w[0] + w[1] * x - y; g0 += (2 * e) / pts.length; g1 += (2 * e * x) / pts.length; L += (e * e) / pts.length; });
+      w = [w[0] - lr * g0, w[1] - lr * g1]; draw(); $("#info").textContent = `iteration ${++it} · loss ${L.toFixed(4)}${!isFinite(L) || L > 10 ? " · diverging! 💥" : ""}`;
+      if (it > 120 || !isFinite(L) || L > 10) clearInterval(t); }, 40); };
+  draw();
+}
+function sbKmeans(el) {
+  el.innerHTML = `<p class="muted">Step through k-means: assign points to the nearest centroid, then move centroids.</p>
+  <canvas id="cv" width="480" height="360"></canvas><label>k = <b id="kv">3</b></label><input id="k" type="range" min="2" max="6" value="3">
+  <div class="row"><button class="btn" onclick="step()">Step</button><button class="btn ghost" onclick="reset()">New data</button></div><p id="info" style="font-weight:800"></p>`;
+  const cv = $("#cv"), g = cv.getContext("2d"), cols = ["#58CC02", "#1CB0F6", "#FF9600", "#CE82FF", "#FF4B4B", "#FFC800"];
+  let P = [], Cn = [], lab = [], it = 0;
+  window.reset = () => { P = []; const k = +$("#k").value; $("#kv").textContent = k;
+    for (let c = 0; c < 4; c++) { const cx = 60 + Math.random() * 360, cy = 60 + Math.random() * 240; for (let i = 0; i < 40; i++) P.push([cx + (Math.random() - 0.5) * 110, cy + (Math.random() - 0.5) * 110]); }
+    Cn = Array.from({ length: k }, () => P[Math.floor(Math.random() * P.length)].slice()); lab = P.map(() => -1); it = 0; paint(); };
+  function paint() { g.clearRect(0, 0, 480, 360);
+    P.forEach((p, i) => { g.fillStyle = lab[i] < 0 ? "#AFAFAF" : cols[lab[i]]; g.beginPath(); g.arc(p[0], p[1], 4, 0, 7); g.fill(); });
+    Cn.forEach((c, j) => { g.fillStyle = cols[j]; g.strokeStyle = "#4B4B4B"; g.lineWidth = 3; g.beginPath(); g.arc(c[0], c[1], 11, 0, 7); g.fill(); g.stroke(); });
+    const inertia = P.reduce((s, p, i) => s + (lab[i] < 0 ? 0 : (p[0] - Cn[lab[i]][0]) ** 2 + (p[1] - Cn[lab[i]][1]) ** 2), 0);
+    $("#info").textContent = `iteration ${it} · inertia ${Math.round(inertia)}`; }
+  window.step = () => { lab = P.map((p) => Cn.reduce((b, c, j) => ((p[0] - c[0]) ** 2 + (p[1] - c[1]) ** 2 < (p[0] - Cn[b][0]) ** 2 + (p[1] - Cn[b][1]) ** 2 ? j : b), 0));
+    Cn = Cn.map((c, j) => { const m = P.filter((_, i) => lab[i] === j); return m.length ? [m.reduce((s, p) => s + p[0], 0) / m.length, m.reduce((s, p) => s + p[1], 0) / m.length] : c; });
+    it++; paint(); };
+  $("#k").oninput = reset; reset();
+}
+function sbPerceptron(el) {
+  el.innerHTML = `<p class="muted">Train a perceptron on a logic gate. Notice it never solves XOR — that needs a hidden layer (Lab 11).</p>
+  <div class="row"><button class="btn" onclick="train('AND')">AND</button><button class="btn blue" onclick="train('OR')">OR</button><button class="btn red" onclick="train('XOR')">XOR</button></div>
+  <canvas id="cv" width="320" height="320" style="margin-top:12px"></canvas><p id="info" style="font-weight:800"></p>`;
+  const g = $("#cv").getContext("2d"), X = [[0, 0], [0, 1], [1, 0], [1, 1]], T = { AND: [0, 0, 0, 1], OR: [0, 1, 1, 1], XOR: [0, 1, 1, 0] };
+  window.train = (gate) => { let w = [0, 0, 0], ep = 0, errs = 0; const y = T[gate];
+    const t = setInterval(() => { errs = 0;
+      X.forEach((x, i) => { const p = w[0] + w[1] * x[0] + w[2] * x[1] > 0 ? 1 : 0, e = y[i] - p; if (e) errs++; w = [w[0] + 0.2 * e, w[1] + 0.2 * e * x[0], w[2] + 0.2 * e * x[1]]; });
+      ep++; g.clearRect(0, 0, 320, 320);
+      for (let a = 0; a < 320; a += 8) for (let b = 0; b < 320; b += 8) { const xa = a / 320 * 1.4 - 0.2, xb = 1.2 - b / 320 * 1.4; g.fillStyle = w[0] + w[1] * xa + w[2] * xb > 0 ? "#D7FFB8" : "#FFDFE0"; g.fillRect(a, b, 8, 8); }
+      X.forEach((x, i) => { g.fillStyle = y[i] ? "#58CC02" : "#FF4B4B"; g.beginPath(); g.arc((x[0] + 0.2) / 1.4 * 320, (1.2 - x[1]) / 1.4 * 320, 14, 0, 7); g.fill(); });
+      $("#info").textContent = `${gate}: epoch ${ep} · errors ${errs}${errs === 0 ? " · converged ✅" : ep >= 30 ? " · cannot separate ❌" : ""}`;
+      if (errs === 0 || ep >= 30) clearInterval(t); }, 150); };
+}
+
+paintTop(); route();
+</script>
+</body>
+</html>

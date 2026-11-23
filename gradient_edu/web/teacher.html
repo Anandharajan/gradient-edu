@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradient · Teacher dashboard · CS3491</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--green:#58CC02;--green-d:#58A700;--blue:#1CB0F6;--blue-d:#1899D6;--yellow:#FFC800;--orange:#FF9600;--red:#FF4B4B;--purple:#CE82FF;
+--eel:#4B4B4B;--wolf:#777;--swan:#E5E5E5;--polar:#F7F7F7}
+*{box-sizing:border-box}body{margin:0;font-family:Nunito,system-ui,sans-serif;color:var(--eel);background:#fff}
+header{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:2px solid var(--swan);position:sticky;top:0;background:#fff;z-index:3}
+header b{font-size:24px;font-weight:900;color:var(--green)}header a{font-weight:800;color:var(--blue);text-decoration:none}
+main{max-width:1200px;margin:0 auto;padding:20px}
+h2{font-weight:900;margin:28px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{border:2px solid var(--swan);border-radius:16px;padding:16px}
+.big{font-size:36px;font-weight:900}.muted{color:var(--wolf);font-weight:700}
+.bar{height:12px;background:var(--swan);border-radius:8px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%}
+.btn{border:none;border-radius:14px;padding:10px 18px;font-weight:800;font-family:inherit;text-transform:uppercase;cursor:pointer;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-d)}
+.btn.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-d)}
+.btn:active{transform:translateY(4px);box-shadow:none}
+.wrap{overflow:auto;border:2px solid var(--swan);border-radius:16px}
+table{border-collapse:collapse;width:100%;font-weight:700;font-size:14px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--swan);text-align:center;white-space:nowrap}
+th{background:var(--polar);position:sticky;top:0}td.l,th.l{text-align:left}
+.c{border-radius:8px;padding:2px 6px;display:inline-block;min-width:38px}
+.completed{background:#D7FFB8;color:var(--green-d)}.late{background:#FFF4CC;color:#B28600}.viva-pending{background:#DDF4FF;color:var(--blue-d)}.pending{background:#FFDFE0;color:#EA2B2B}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select{font-family:inherit;font-size:15px;border:2px solid var(--swan);border-radius:12px;padding:8px 10px;background:var(--polar)}
+.lvl{font-size:12px;font-weight:900;padding:2px 8px;border-radius:999px;color:#fff}
+#drop{border:3px dashed var(--swan);border-radius:16px;padding:40px;text-align:center}
+</style>
+</head>
+<body>
+<header><b>gradient</b><span class="muted">Teacher dashboard · CS3491 AI & ML</span><span style="flex:1"></span><a href="index.html">Student app →</a></header>
+<main id="m">
+  <div id="drop"><h2>Load the class gradebook</h2>
+  <p class="muted">Open <code>dashboard.json</code> from your private <code>cs3491-gradebook</code> repo (or run <code>gradient-edu demo</code>).</p>
+  <input type="file" id="f" accept=".json"></div>
+</main>
+<script src="dashboard.js" onerror="void 0"></script>
+<script>
+const $ = (q) => document.querySelector(q);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const LVL = ["#FF4B4B", "#FF9600", "#1CB0F6", "#58CC02"];
+let D = null, filter = { q: "", section: "", status: "" };
+$("#f") && ($("#f").onchange = (e) => { const r = new FileReader(); r.onload = () => { D = JSON.parse(r.result); render(); }; r.readAsText(e.target.files[0]); });
+if (window.DASHBOARD) { D = window.DASHBOARD; render(); }
+
+function render() {
+  const S = D.students, n = S.length, labs = Object.keys(D.labs).map(Number);
+  const totalSub = S.reduce((a, s) => a + s.submitted, 0), totalDone = S.reduce((a, s) => a + s.completed, 0);
+  const avg = n ? (S.reduce((a, s) => a + s.lab_average, 0) / n).toFixed(1) : 0;
+  const sections = [...new Set(S.map((s) => s.section).filter(Boolean))];
+  let h = `<div class="grid">
+    <div class="card"><div class="muted">Students</div><div class="big">${n}</div></div>
+    <div class="card"><div class="muted">Lab submissions</div><div class="big">${totalSub}<span class="muted" style="font-size:18px"> / ${n * labs.length}</span></div>
+      <div class="bar"><i style="width:${(100 * totalSub) / (n * labs.length || 1)}%;background:var(--blue)"></i></div></div>
+    <div class="card"><div class="muted">Fully completed (viva done)</div><div class="big">${totalDone}</div>
+      <div class="bar"><i style="width:${(100 * totalDone) / (n * labs.length || 1)}%;background:var(--green)"></i></div></div>
+    <div class="card"><div class="muted">Class lab average</div><div class="big">${avg}%</div></div></div>`;
+  h += `<h2>Course outcome attainment</h2><div class="grid">` + Object.entries(D.co_summary).map(([co, c]) =>
+    `<div class="card"><div class="row" style="justify-content:space-between"><b style="font-size:20px">${co}</b><span class="lvl" style="background:${LVL[c.level]}">Level ${c.level}</span></div>
+     <div class="muted" style="font-size:13px;min-height:36px">${esc(c.description)}</div>
+     <div class="big" style="font-size:28px">${c.percent}%</div><div class="muted" style="font-size:13px">${c.students_attained}/${n} students ≥ ${D.course.attainment_threshold}% · avg ${c.average}%</div>
+     <div class="bar"><i style="width:${c.percent}%;background:${c.target_met ? "var(--green)" : "var(--orange)"}"></i></div></div>`).join("") + `</div>`;
+  h += `<h2>Labs</h2><div class="wrap"><table><tr><th>Lab</th><th class="l">Title</th><th>CO</th><th>Submitted</th><th>Completed</th><th>Viva pending</th><th>Average</th></tr>` +
+    Object.entries(D.lab_summary).map(([k, s]) => `<tr><td>${k}</td><td class="l">${esc(s.title)}</td><td>${s.co}</td><td>${s.submitted}/${n}</td><td>${s.completed}</td><td>${s.viva_pending}</td><td>${s.average ?? "-"}</td></tr>`).join("") + `</table></div>`;
+  h += `<h2>Completion matrix</h2><div class="row" style="margin-bottom:10px">
+    <input id="q" placeholder="Search name / roll no" value="${esc(filter.q)}">
+    <select id="sec"><option value="">All sections</option>${sections.map((s) => `<option ${filter.section === s ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
+    <select id="st"><option value="">All students</option><option value="pending" ${filter.status === "pending" ? "selected" : ""}>Has pending labs</option><option value="viva" ${filter.status === "viva" ? "selected" : ""}>Has viva pending</option></select>
+    <span style="flex:1"></span><button class="btn blue" onclick="exportCsv()">Export marks CSV</button></div>
+    <div class="muted" style="margin-bottom:8px"><span class="c completed">✅</span> completed · <span class="c viva-pending">🎤</span> viva pending · <span class="c late">🕒</span> late · <span class="c pending">❌</span> not submitted</div>
+    <div class="wrap" style="max-height:520px"><table><tr><th class="l">Roll no</th><th class="l">Name</th><th>Sec</th>${labs.map((l) => `<th>L${String(l).padStart(2, "0")}</th>`).join("")}<th>Done</th><th>Avg</th><th>Grade</th>${Object.keys(D.co_summary).map((c) => `<th>${c}</th>`).join("")}</tr>`;
+  const icon = { completed: "✅", late: "🕒", "viva-pending": "🎤", pending: "❌" };
+  S.filter((s) => (!filter.q || (s.name + s.roll_no + s.github).toLowerCase().includes(filter.q.toLowerCase()))
+      && (!filter.section || s.section === filter.section)
+      && (!filter.status || Object.values(s.labs).some((e) => filter.status === "pending" ? e.status === "pending" : e.status === "viva-pending")))
+    .forEach((s) => {
+      h += `<tr><td class="l">${esc(s.roll_no)}</td><td class="l" title="${esc(s.github)}">${esc(s.name)}</td><td>${esc(s.section)}</td>` +
+        labs.map((l) => { const e = s.labs[l]; return `<td><span class="c ${e.status}" title="${e.status}${e.attempts ? " · " + e.attempts + " attempt(s)" : ""}">${icon[e.status]}${e.score != null ? " " + Math.round(e.score) : ""}</span></td>`; }).join("") +
+        `<td>${s.completed}/${labs.length}</td><td>${s.lab_average}</td><td>${s.grade}</td>` +
+        Object.keys(D.co_summary).map((c) => `<td style="color:${s.co[c].attained ? "var(--green-d)" : "var(--red)"}">${s.co[c].percent}</td>`).join("") + `</tr>`;
+    });
+  h += `</table></div>`;
+  const pend = S.map((s) => [s, labs.filter((l) => s.labs[l].status === "pending")]).filter(([, p]) => p.length);
+  h += `<h2>Follow-up list (${pend.length} students)</h2><div class="card">${pend.map(([s, p]) => `<div><b>${esc(s.roll_no)} ${esc(s.name)}</b> — labs ${p.join(", ")}</div>`).join("") || "Everyone is up to date 🎉"}</div>`;
+  $("#m").innerHTML = h;
+  $("#q").oninput = (e) => { filter.q = e.target.value; render(); $("#q").focus(); $("#q").setSelectionRange(99, 99); };
+  $("#sec").onchange = (e) => { filter.section = e.target.value; render(); };
+  $("#st").onchange = (e) => { filter.status = e.target.value; render(); };
+}
+function exportCsv() {
+  const labs = Object.keys(D.labs);
+  const rows = [["roll_no", "name", "github", "section", ...labs.map((l) => "lab" + l), "completed", "lab_average", "internal_practical", "grade", ...Object.keys(D.co_summary)]];
+  D.students.forEach((s) => rows.push([s.roll_no, s.name, s.github, s.section, ...labs.map((l) => s.labs[l].score ?? ""), s.completed, s.lab_average, s.internal_practical, s.grade, ...Object.keys(D.co_summary).map((c) => s.co[c].percent)]));
+  const blob = new Blob([rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n")], { type: "text/csv" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cs3491_marks.csv"; a.click();
+}
+</script>
+</body>
+</html>

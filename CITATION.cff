@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use Gradient, please cite it as below."
+title: "Gradient: gamified, GitHub-graded learning for Artificial Intelligence and Machine Learning (CS3491)"
+version: 0.1.0
+date-released: 2026-11-23
+license: MIT
+repository-code: "https://github.com/anandharajan/gradient-edu"
+keywords: [machine-learning, education, autograding, github-classroom, gamification, outcome-based-education]
+authors:
+  - family-names: TRV
+    given-names: Anandharajan
+    email: trvanandharajan@gmail.com
+    affiliation: "Department of ECE, St. Joseph College of Engineering, Sriperumbudur, Chennai"
