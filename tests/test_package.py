@@ -49,3 +49,24 @@ def test_every_exam_question_has_a_lab():
     from gradient_edu.labs import EXAM_QUESTIONS, EXAM_RUBRIC
     assert len(EXAM_QUESTIONS) == 20 and all(lab in LABS for _, lab in EXAM_QUESTIONS.values())
     assert sum(m for _, m in EXAM_RUBRIC) == 100
+
+
+def test_self_serve_discovery(monkeypatch):
+    calls = []
+
+    def fake_api(path, token, method="GET", body=None):
+        calls.append((method, path))
+        if path.startswith("/user/repository_invitations?"):
+            return [{"id": 7, "repository": {"name": "cs3491-lab-04-bayes-net", "full_name": "meena/cs3491-lab-04-bayes-net"}},
+                    {"id": 8, "repository": {"name": "holiday-photos", "full_name": "meena/holiday-photos"}}]
+        if path.startswith("/user/repos") and path.endswith("&page=1"):
+            return [{"name": "cs3491-lab-04-bayes-net", "owner": {"login": "meena"}, "default_branch": "main"},
+                    {"name": "other", "owner": {"login": "x"}, "default_branch": "main"}]
+        return []
+    monkeypatch.setattr(collector, "_api", fake_api)
+    assert collector.accept_invitations("t", "cs3491-lab") == ["meena/cs3491-lab-04-bayes-net"]
+    assert ("PATCH", "/user/repository_invitations/7") in calls
+    assert ("PATCH", "/user/repository_invitations/8") not in calls   # never accept unrelated invites
+    assert collector.discover_collaborator_repos("t", "cs3491-lab") == [("meena", "cs3491-lab-04-bayes-net", 4, "main")]
+    assert collector.parse_own_repo_name("cs3491-lab-13-cond-prob-quiz", "cs3491-lab") == 13
+    assert collector.parse_own_repo_name("cs3491-lab-04-bayes-net-meena", "cs3491-lab") is None

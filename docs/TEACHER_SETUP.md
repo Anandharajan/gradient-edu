@@ -1,44 +1,45 @@
-# Teacher setup (≈ 1 hour, once per semester)
+# Teacher setup (≈ 30 minutes, once per semester)
 
-You will create **one GitHub organisation** with these repositories:
+> **GitHub Classroom was retired on 28 Aug 2026.** Gradient therefore uses a *self-serve* flow: **Start lab** creates
+> the student's own private repo from a public lab template, and the student adds the teacher account as a
+> collaborator so the grader can mark it. (You can later switch to Classroom 50 — see the end of this page.)
 
 | Repo | Visibility | Contents |
 |---|---|---|
 | `gradient-edu` (your account) | Public | App, package, docs — the repo people star and fork |
-| `cs3491-grader` | **Private** | Hidden tests + model solutions |
-| `cs3491-gradebook` | **Private** | Roster, deadlines, viva marks, dashboards (auto-updated) |
-| `cs3491-lab-01-bfs-dfs` … `cs3491-lab-12-deep-nn` | Private, **template** | Starter code students receive |
-| `cs3491-lab-NN-<slug>-<student>` | Private (auto-created) | Each student's work |
+| `sjce-aiml/cs3491-grader` | **Private** | Hidden tests + model solutions |
+| `sjce-aiml/cs3491-gradebook` | **Private** | Roster, deadlines, viva marks, dashboards (auto-updated) |
+| `sjce-aiml/cs3491-lab-01-bfs-dfs` … `cs3491-lab-13-cond-prob-quiz` | **Public template** | Starter code only (no solutions, no hidden tests) |
+| `<student>/cs3491-lab-NN-<slug>` | Private (student creates it) | Each student's work; teacher account is a collaborator |
 
-## 1. Organisation and Classroom
-1. Apply for **GitHub Education teacher benefits** (education.github.com → Teachers), which gives free private repos and Actions minutes.
-2. Create an organisation, e.g. `sjce-aiml`. Settings → Member privileges → Base permission: **No permission**.
-3. Go to **classroom.github.com** → New classroom → choose the organisation.
-4. Classroom → **Roster** → upload `roll_no` identifiers (one per line). Students link their GitHub account on first login.
+## 1. Organisation and repos (done)
+The org, the private grader/gradebook and the 13 public lab templates are already set up. To recreate them,
+run `setup_github.ps1` and tick **Settings → Template repository** on every lab repo.
 
-## 2. Push the repos
-1. Push `cs3491-grader/` and `cs3491-gradebook/` to the org as **private** repos.
-2. Push each folder in `lab-templates/` as a private repo and tick **Settings → Template repository**.
-3. Push `gradient-edu/` as a **public** repo, then enable **Settings → Pages → Source: GitHub Actions**.
-
-## 3. Grader token
-1. Create a **fine-grained personal access token**: Resource owner = the org; repositories = all; permissions: **Contents read & write**, **Metadata read**.
-2. In `cs3491-gradebook` → Settings → Secrets → Actions → `GRADER_TOKEN` = the token.
-3. Actions tab → **Collect & grade** → *Run workflow* once to test. After that it runs every 15 minutes.
+## 2. Grader token (you must do this — it is a credential)
+1. github.com → Settings → Developer settings → **Personal access tokens → Tokens (classic)** → Generate new token.
+   Scopes: **repo** (and **read:org**). Expiry: end of semester.
+   *A classic token is needed because students' repos are in their own accounts; fine-grained org tokens cannot reach them.*
+2. `sjce-aiml/cs3491-gradebook` → Settings → Secrets and variables → Actions → New secret `GRADER_TOKEN` = the token.
+3. Actions → **Collect & grade** → *Run workflow* once. It then runs every 15 minutes: accepts students'
+   collaborator invites for lab repos (only repos named `cs3491-lab-NN-…`), grades new commits, writes `GRADE.md`
+   back and rebuilds the dashboard.
 
 > Why this design? Hidden tests never run inside student repos, so a student cannot edit a workflow to print them.
 > Student code runs in a separate process with all tokens removed from its environment.
 
-## 4. Create the 12 assignments
-For each lab: Classroom → **New assignment** → Individual →
-- Title `cs3491-lab-04-bayes-net` (**exactly the template name**; repos then become `cs3491-lab-04-bayes-net-<username>`)
-- Private repos ✔, Template = the matching lab template, deadline = same as `deadlines.json`
-- Autograding: none (our grader does it), **Feedback pull request** ✔ (for viva comments)
+## 3. What students do (per lab)
+1. App → lab page → **Start lab** → GitHub's "Create repository" page opens with the template, name and *Private* preset → **Create**.
+2. In the new repo: **Settings → Collaborators → Add people → `Anandharajan`**.
+3. **Code → Codespaces → Create codespace** (browser VS Code, Python preinstalled), implement, `gradient-edu check`, commit & push.
+4. `GRADE.md` appears within ~15 minutes; the teacher dashboard updates.
 
-Copy each invite link into `gradient-edu/app/config.js` → `classroomLinks`, push, and the **Start lab** buttons go live.
+## 4. Roster
+`roster.csv` (`roll_no,name,github,section`) maps GitHub usernames to roll numbers. Collect usernames in week 1
+(e.g. a Google Form or a "Lab 0" where students create Lab 1 and add you as collaborator), then fill the file.
 
 ## 5. Gradebook files
-- `roster.csv`: `roll_no,name,github,section`. Export the Classroom roster after students join.
+- `roster.csv`: `roll_no,name,github,section` (see section 4).
 - `deadlines.json`: one IST deadline per lab. Late work loses 2 marks per day (max −10).
 - `manual.csv`: after each viva add `github,lab,viva,report` (viva /15; `report` optionally overrides the provisional REPORT.md marks /15).
 
@@ -58,3 +59,9 @@ Open `teacher.html` from the app and load `dashboard.json` from the gradebook fo
 - `DASHBOARD.md` gives CO attainment per CO with levels 3/2/1/0 (≥70% / ≥60% / ≥50% / <50% of students scoring ≥60%) for NBA.
 - Plagiarism: `gh classroom clone student-repos` then run JPlag on the `src/` folders.
 - Next year: change seeds and fixtures in `hidden/tests.py`, then regenerate templates with `python scripts/make_lab_templates.py`.
+
+## Later: moving to Classroom 50 (optional)
+Classroom 50 (classroom50.org, by the Fifty Foundation) is GitHub's recommended free replacement for Classroom.
+It needs the org on the **Team plan**, which is free after GitHub Education teacher verification. Once verified:
+create the classroom on `sjce-aiml`, register the 13 templates as assignments, and paste each accept link into
+`app/config.js → classroomLinks`; Start lab then uses those links and `gradient-edu collect --org sjce-aiml` grades the org repos.

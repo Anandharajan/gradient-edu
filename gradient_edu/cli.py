@@ -64,7 +64,8 @@ def cmd_collect(a):
     from .collector import collect
     from .gradebook import write_all
     graded = collect(a.gradebook, a.hidden, org=a.org, prefix=a.prefix,
-                     token=os.environ.get("GITHUB_TOKEN"), local_dir=a.local_dir)
+                     token=os.environ.get("GITHUB_TOKEN"), local_dir=a.local_dir,
+                     collaborators=a.collaborators)
     print(f"Graded {len(graded)} new commit(s).")
     if (Path(a.gradebook) / "roster.csv").exists():
         write_all(a.gradebook, a.practical_max)
@@ -106,6 +107,8 @@ def main(argv=None):
     k.add_argument("--org")
     k.add_argument("--prefix", default="cs3491-lab")
     k.add_argument("--local-dir")
+    k.add_argument("--collaborators", action="store_true",
+                   help="also grade student-owned lab repos where the token user is a collaborator")
     k.add_argument("--practical-max", type=float, default=100)
     k.set_defaults(fn=cmd_collect)
     d = sub.add_parser("demo", help="60-second demo with a sample class (no keys needed)")

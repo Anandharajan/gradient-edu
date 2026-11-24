@@ -210,18 +210,20 @@ function lesson(id) {
 function lab(n) {
   const slug = C.labSlugs[n], repo = `${CFG.repoPrefix}-${String(n).padStart(2, "0")}-${slug}`;
   const invite = CFG.classroomLinks[n];
+  const startUrl = invite || `https://github.com/new?template_owner=${CFG.org}&template_name=${repo}` +
+    `&owner=@me&name=${repo}&visibility=private&description=${encodeURIComponent("CS3491 Lab " + n + " submission")}`;
   const unit = C.units.find((u) => u.lessons.some((l) => l.lab === n));
   V().innerHTML = `<button class="btn ghost" onclick="go('home')">← Back</button>
   <span class="pill" style="margin-left:10px">${unit ? unit.co : ""} · Lab ${n}</span>
   <h1>🏰 Lab ${n}: ${esc(C.labs[n])}</h1>
   <div class="card"><h3 style="margin-top:0">Your quest</h3><ol style="font-weight:700;line-height:1.9">
     <li>▶ Watch the lab walkthrough on <a href="${C.channel}" target="_blank" rel="noopener">YouTube</a></li>
-    <li>Click <b>Start lab</b> → GitHub creates your private repo <code>${repo}-&lt;you&gt;</code></li>
-    <li>Implement <code>src/lab${String(n).padStart(2, "0")}.py</code>, run <code>pytest -q</code> or <code>gradient-edu check</code></li>
-    <li>Fill <code>REPORT.md</code> (Aim, Algorithm, Observations, Result)</li>
-    <li><code>git push</code> → marks appear in <code>GRADE.md</code> within ~15 min. Push again to improve!</li></ol>
-    <div class="row">${invite ? `<a class="btn" href="${invite}" target="_blank" rel="noopener">Start lab</a>`
-      : `<button class="btn" disabled title="Teacher will share the invite link">Start lab (link coming)</button>`}
+    <li>Click <b>Start lab</b> → on GitHub keep the name <code>${repo}</code>, keep it <b>Private</b>, click <b>Create repository</b></li>
+    ${invite ? "" : `<li>In your new repo: <b>Settings → Collaborators → Add people</b> → add <code>${esc(CFG.teacher)}</code> (once per lab, so it can be graded)</li>`}
+    <li><b>Code → Codespaces → Create codespace</b> — VS Code opens in your browser with Python ready (or clone it to your PC)</li>
+    <li>Implement <code>src/lab${String(n).padStart(2, "0")}.py</code>, run <code>gradient-edu check</code>, fill <code>REPORT.md</code></li>
+    <li>Commit &amp; push (Source Control panel) → marks appear in <code>GRADE.md</code> within ~15 min. Push again to improve!</li></ol>
+    <div class="row"><a class="btn" href="${startUrl}" target="_blank" rel="noopener">Start lab</a>
     <button class="btn ghost" onclick="S.done['lab${n}']=true;S.xp+=50;save();toast('+50 XP');go('home')">I've pushed my lab</button></div></div>
   ${manualCard(n)}
   <div class="card"><h3 style="margin-top:0">Marks (100)</h3><table>
@@ -271,12 +273,16 @@ async function loadGrades() {
   out.innerHTML = `<p class="muted">Loading…</p>`;
   const rows = [];
   for (const n of Object.keys(C.labs).map(Number)) {
-    const repo = `${CFG.repoPrefix}-${String(n).padStart(2, "0")}-${C.labSlugs[n]}-${u}`;
-    try {
-      const r = await fetch(`https://api.github.com/repos/${CFG.org}/${repo}/contents/.gradient/results.json`,
-        { headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github.raw+json" } });
-      rows.push(r.ok ? Object.assign({ lab: n }, await r.json()) : { lab: n, missing: true });
-    } catch (e) { rows.push({ lab: n, missing: true }); }
+    const base = `${CFG.repoPrefix}-${String(n).padStart(2, "0")}-${C.labSlugs[n]}`;
+    const hdr = { headers: { Authorization: "Bearer " + t, Accept: "application/vnd.github.raw+json" } };
+    let row = { lab: n, missing: true };
+    for (const path of [`${u}/${base}`, `${CFG.org}/${base}-${u}`]) {
+      try {
+        const r = await fetch(`https://api.github.com/repos/${path}/contents/.gradient/results.json`, hdr);
+        if (r.ok) { row = Object.assign({ lab: n }, await r.json()); break; }
+      } catch (e) { /* try next location */ }
+    }
+    rows.push(row);
   }
   S.grades = S.grades || {};
   rows.forEach((r) => { if (!r.missing && r.provisional_percent != null) S.grades[r.lab] = Math.max(S.grades[r.lab] || 0, r.provisional_percent); });

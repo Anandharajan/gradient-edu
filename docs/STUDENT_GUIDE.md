@@ -2,8 +2,9 @@
 
 1. **Learn**: open the app, watch the lesson video, read the notes, and score at least 70% on the quiz (⚡ XP, 🔥 streaks!).
 2. **Play**: try the unit's sandbox to see the algorithm in action.
-3. **Start lab**: on the 🏰 lab page click **Start lab**, sign in to GitHub, and choose your roll number (first time only).
-   GitHub creates your private repo `cs3491-lab-NN-<slug>-<you>`.
+3. **Start lab**: on the 🏰 lab page click **Start lab**. GitHub's *Create repository* page opens with everything
+   filled in (template, name `cs3491-lab-NN-…`, **Private**) — click **Create repository**.
+   Then in your new repo: **Settings → Collaborators → Add people → `Anandharajan`** (once per lab, so it can be graded).
 4. **Code**:
    ```bash
    git clone <your repo url> && cd <repo>
