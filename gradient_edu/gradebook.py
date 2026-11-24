@@ -127,7 +127,7 @@ def render_markdown(data):
             e = s["labs"][n]
             cells.append(ICON[e["status"]] + (f" {e['score']:.0f}" if e["score"] is not None else ""))
         L.append(f"| {s['roll_no']} | {s['name']} | " + " | ".join(cells) +
-                 f" | {s['completed']}/12 | {s['lab_average']} | {s['grade']} |")
+                 f" | {s['completed']}/{len(LABS)} | {s['lab_average']} | {s['grade']} |")
     pending = [(s, n) for s in data["students"] for n in LABS if s["labs"][n]["status"] == "pending"]
     L += ["", f"## Follow-up list ({len(pending)} pending lab submissions)", ""]
     by_student = {}

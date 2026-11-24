@@ -50,7 +50,8 @@ window.COURSE = {
           notes: "Agents rarely know the world exactly. Probability summarises uncertainty; decision theory = probability theory + utility theory. Rational agents maximise expected utility.",
           quiz: [{ q: "Decision theory combines probability theory with…", a: ["Utility theory", "Graph theory", "Set theory", "Number theory"], c: 0 }] },
         { id: "2.2", title: "Bayesian inference", video: "",
-          notes: "Bayes' rule: P(H|E) = P(E|H) P(H) / P(E). It turns causal knowledge P(effect|cause) into diagnostic knowledge P(cause|effect). Try the Bayes slider sandbox!",
+          lab: 13,
+          notes: "Bayes' rule: P(H|E) = P(E|H) P(H) / P(E). Conditional probability: P(A|B) = P(A and B) / P(B). It turns causal knowledge P(effect|cause) into diagnostic knowledge P(cause|effect). Try the Bayes slider sandbox, then build your own quiz app in Lab 13!",
           quiz: [
             { q: "In Bayes' rule, P(H) is called the…", a: ["Prior", "Likelihood", "Posterior", "Evidence"], c: 0 },
             { q: "A test is 99% accurate and the disease is rare. A positive result means disease is…", a: ["Certain", "Still fairly unlikely", "Impossible", "Exactly 99% likely"], c: 1 } ] },
@@ -157,8 +158,32 @@ window.COURSE = {
     1: "Uninformed search (BFS, DFS)", 2: "Informed search (A*, memory-bounded A*)", 3: "Naive Bayes models",
     4: "Bayesian networks", 5: "Regression models", 6: "Decision trees and random forests", 7: "SVM models",
     8: "Ensembling techniques", 9: "Clustering algorithms", 10: "EM for Bayesian networks",
-    11: "Simple NN models", 12: "Deep learning NN models"
+    11: "Simple NN models", 12: "Deep learning NN models", 13: "Conditional probability quiz app"
   },
   labSlugs: { 1: "bfs-dfs", 2: "astar", 3: "naive-bayes", 4: "bayes-net", 5: "regression", 6: "trees", 7: "svm",
-              8: "ensembles", 9: "clustering", 10: "em-bayes-net", 11: "simple-nn", 12: "deep-nn" }
+              8: "ensembles", 9: "clustering", 10: "em-bayes-net", 11: "simple-nn", 12: "deep-nn", 13: "cond-prob-quiz" },
+  // University practical exam (April/May 2026, SET 1 numbering): [question, lab that prepares you]
+  exam: [
+    ["Develop a code by implementing the Uninformed search algorithm - BFS.", 1],
+    ["Develop a code by implementing the Uninformed search algorithm - DFS.", 1],
+    ["Develop a code by implementing the Informed search algorithm - A*.", 2],
+    ["Develop a code by implementing the Informed search algorithm - Memory Bounded A*.", 2],
+    ["Develop a code by implementing the analysis of a data set using naive Bayes models.", 3],
+    ["Develop a code by implementing the probability relationship check between two datasets using Bayesian Networks.", 4],
+    ["Develop a code to understand and predict an outcome variable based on the input using Regression models.", 5],
+    ["Develop a code to build a decision tree to predict the expected output from the desired input.", 6],
+    ["Develop a code to build random forests for the dataset and understand the difference between Random Forest and Decision Tree.", 6],
+    ["Develop a code to build support vector machine models for a classification task.", 7],
+    ["Implement an application that imposes the ensembling techniques.", 8],
+    ["Implement an application of clustering algorithms.", 9],
+    ["Write an EM code for implementing the Bayesian Networks.", 10],
+    ["Develop a neural network model to optimize the pattern.", 11],
+    ["Develop a deep-learning neural network for experiencing different architectural models.", 12],
+    ["Write a code to find the shortest path between two points by evaluating the cost function of each possible path.", 2],
+    ["Develop a simple task that uses a limited amount of memory and is suitable for large search spaces.", 2],
+    ["Develop a quiz application showing that the probability of an event given prior knowledge of another event can be calculated using conditional probability.", 13],
+    ["Write an application that draws basic conditional dependencies between different variables in a probabilistic manner.", 4],
+    ["Develop a regression model that predicts a continuous numerical outcome variable based on one or more input variables.", 5]
+  ],
+  examRubric: [["Aim / Principle / Procedure", 20], ["Program", 30], ["Calculation & Results", 30], ["Viva-voce", 10], ["Record", 10]]
 };

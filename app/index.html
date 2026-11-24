@@ -73,7 +73,7 @@ code{background:var(--polar);padding:2px 6px;border-radius:6px}
     <svg width="38" height="38" viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="14" width="44" height="38" rx="14" fill="#58CC02"/><rect x="10" y="44" width="44" height="8" rx="4" fill="#58A700"/><circle cx="24" cy="31" r="7" fill="#fff"/><circle cx="40" cy="31" r="7" fill="#fff"/><circle cx="25" cy="32" r="3.5" fill="#4B4B4B"/><circle cx="41" cy="32" r="3.5" fill="#4B4B4B"/><path d="M26 42q6 4 12 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><line x1="32" y1="14" x2="32" y2="5" stroke="#58A700" stroke-width="3"/><circle cx="32" cy="5" r="4" fill="#FFC800"/></svg>
     <span>gradient</span>
   </div>
-  <div class="nav"><a id="n-home" onclick="go('home')">Learn</a><a id="n-progress" onclick="go('progress')">Progress</a><a href="teacher.html">Teacher</a></div>
+  <div class="nav"><a id="n-home" onclick="go('home')">Learn</a><a id="n-exam" onclick="go('exam')">Exam</a><a id="n-progress" onclick="go('progress')">Progress</a><a href="teacher.html">Teacher</a></div>
   <div class="spacer"></div>
   <div class="stat" title="Day streak">🔥 <span id="streak">0</span></div>
   <div class="stat" title="XP">⚡ <span id="xp">0</span></div>
@@ -113,6 +113,7 @@ function route() {
   if (k === "lesson") return lesson(arg);
   if (k === "lab") return lab(+arg);
   if (k === "sandbox") return sandbox(arg);
+  if (k === "exam") { $("#n-exam").classList.add("on"); return exam(); }
   if (k === "progress") { $("#n-progress").classList.add("on"); return progress(); }
   $("#n-home").classList.add("on"); home();
 }
@@ -250,7 +251,7 @@ async function loadGrades() {
   if (!u || !t) { out.innerHTML = `<p class="muted">Enter both fields.</p>`; return; }
   out.innerHTML = `<p class="muted">Loading…</p>`;
   const rows = [];
-  for (let n = 1; n <= 12; n++) {
+  for (const n of Object.keys(C.labs).map(Number)) {
     const repo = `${CFG.repoPrefix}-${String(n).padStart(2, "0")}-${C.labSlugs[n]}-${u}`;
     try {
       const r = await fetch(`https://api.github.com/repos/${CFG.org}/${repo}/contents/.gradient/results.json`,
@@ -261,14 +262,46 @@ async function loadGrades() {
   renderGrades(rows);
 }
 function demoGrades() {
-  renderGrades(Array.from({ length: 12 }, (_, i) => i < 7
+  renderGrades(Array.from({ length: Object.keys(C.labs).length }, (_, i) => i < 7
     ? { lab: i + 1, auto_total: 60 + ((i * 7) % 25), provisional_percent: Math.round((100 * (60 + ((i * 7) % 25))) / 85), provisional_grade: ["A+", "O", "A", "O", "A+", "B+", "O"][i], co: C.units.find((u) => u.lessons.some((l) => l.lab === i + 1)).co }
     : { lab: i + 1, missing: true }));
 }
 function renderGrades(rows) {
   $("#grades").innerHTML = `<table style="margin-top:12px"><tr><th>Lab</th><th>Title</th><th>Auto marks</th><th>Grade</th></tr>${rows.map((r) =>
     `<tr><td>${r.lab}</td><td>${esc(C.labs[r.lab])}</td><td>${r.missing ? "❌ not submitted" : `✅ ${r.auto_total}/85 (${r.provisional_percent}%)`}</td><td>${r.missing ? "-" : r.provisional_grade}</td></tr>`).join("")}</table>
-    <p class="muted">Completed ${rows.filter((r) => !r.missing).length}/12. Viva marks are added by your teacher.</p>`;
+    <p class="muted">Completed ${rows.filter((r) => !r.missing).length}/${rows.length}. Viva marks are added by your teacher.</p>`;
+}
+
+// ---------- exam practice: random question slip, 3-hour timer, university marking ----------
+let examTimer = null;
+function exam() {
+  clearInterval(examTimer);
+  const list = C.exam.map((q, i) => `<tr><td>${i + 1}</td><td class="l" style="text-align:left">${esc(q[0])}</td><td><a href="#lab-${q[1]}">Lab ${q[1]}</a></td></tr>`).join("");
+  V().innerHTML = `<h1>🎓 Practical exam practice</h1>
+  <p class="muted">Same format as the university practical: one question by lot, 3 hours, marked out of 100.</p>
+  <div class="card" style="text-align:center"><button class="btn" onclick="drawSlip()">Draw my question</button>
+  <div id="slip"></div></div>
+  <div class="card"><h3 style="margin-top:0">Marking scheme</h3><table>${C.examRubric.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}</table>
+  <p class="muted">Your lab REPORT.md sections map to it: Aim → Aim/Procedure, Algorithm + code → Program, Observations + Result → Calculation & Results.</p></div>
+  <div class="card"><h3 style="margin-top:0">All ${C.exam.length} exam questions and the lab that prepares you</h3><table><tr><th>#</th><th>Question</th><th>Practise in</th></tr>${list}</table></div>`;
+}
+function drawSlip() {
+  const i = Math.floor(Math.random() * C.exam.length), [q, labN] = C.exam[i];
+  let left = 3 * 3600;
+  clearInterval(examTimer);
+  $("#slip").innerHTML = `<div class="card" style="text-align:left;border-color:var(--blue)"><span class="pill">Question ${i + 1}</span>
+    <h2 style="margin:10px 0">${esc(q)}</h2><div class="row"><span class="pill">⏱ <b id="clock">3:00:00</b></span>
+    <a class="btn blue" href="#lab-${labN}">Open Lab ${labN}</a><button class="btn ghost" onclick="clearInterval(examTimer);$('#clock').textContent='stopped'">Stop</button></div>
+    <ol style="font-weight:700;line-height:1.8;margin-top:14px"><li>Write Aim, Principle and Procedure (20)</li><li>Write and run the program (30)</li>
+    <li>Record outputs, calculations and the result (30)</li><li>Prepare for viva (10) and update your record (10)</li>
+    <li>Run <code>gradient-edu check</code> in your lab repo to self-check before the examiner does</li></ol></div>`;
+  examTimer = setInterval(() => {
+    left--; const h = Math.floor(left / 3600), m = Math.floor((left % 3600) / 60), s = left % 60;
+    const el = $("#clock"); if (!el) return clearInterval(examTimer);
+    el.textContent = `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    if (left <= 0) { clearInterval(examTimer); el.textContent = "Time up!"; }
+  }, 1000);
+  if (!S.done["exam-drawn"]) { S.done["exam-drawn"] = true; S.xp += 5; save(); }
 }
 
 // ---------- sandboxes ----------

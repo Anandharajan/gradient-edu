@@ -16,6 +16,6 @@
 6. **Push**: `git add . && git commit -m "Lab NN" && git push`
 7. **Marks**: within ~15 minutes `GRADE.md` in your repo shows every hidden test ✅/❌ and your marks. Fix, push again, and your best attempt counts.
 8. **Viva**: your teacher adds 15 marks after asking you to explain your code.
-9. **Track**: the app's **Progress** page shows your CO mastery and all 12 lab marks.
+9. **Track**: the app's **Progress** page shows your CO mastery and all 13 lab marks.
 
 **Rules:** write your own code (similarity is checked); late pushes lose 2 marks per day; AI tools are allowed only if you can explain every line in the viva.

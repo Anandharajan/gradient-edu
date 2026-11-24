@@ -66,4 +66,4 @@ def run_demo(out):
     for co, c in data["co_summary"].items():
         bar = "█" * int(c["percent"] / 5)
         print(f"  {co} {bar:<20} {c['percent']:5.1f}% attained  (level {c['level']})")
-    print(f"\n  Labs submitted: {sum(s['submitted'] for s in data['students'])} / {len(data['students']) * 12}")
+    print(f"\n  Labs submitted: {sum(s['submitted'] for s in data['students'])} / {len(data['students']) * len(LABS)}")

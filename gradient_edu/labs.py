@@ -38,7 +38,31 @@ LABS = {
     10: dict(title="EM for Bayesian networks", unit=2, co="CO2", slug="em-bayes-net"),
     11: dict(title="Simple NN models", unit=5, co="CO5", slug="simple-nn"),
     12: dict(title="Deep learning NN models", unit=5, co="CO5", slug="deep-nn"),
+    13: dict(title="Conditional probability quiz app", unit=2, co="CO2", slug="cond-prob-quiz"),
 }
+
+# University practical exam questions (April/May 2026 SET 1 numbering) -> lab that prepares for it
+EXAM_QUESTIONS = {
+    1: ("Uninformed search algorithm - BFS", 1), 2: ("Uninformed search algorithm - DFS", 1),
+    3: ("Informed search algorithm - A*", 2), 4: ("Informed search algorithm - Memory Bounded A*", 2),
+    5: ("Analysis of a data set using naive Bayes models", 3),
+    6: ("Probability relationship between datasets using Bayesian Networks", 4),
+    7: ("Predict an outcome variable using regression models", 5),
+    8: ("Decision tree to predict the expected output", 6),
+    9: ("Random forests vs decision tree", 6), 10: ("Support vector machine classification", 7),
+    11: ("Ensembling techniques", 8), 12: ("Clustering algorithms", 9),
+    13: ("EM for Bayesian Networks", 10), 14: ("Neural network model to optimise the pattern", 11),
+    15: ("Deep neural network with different architectures", 12),
+    16: ("Shortest path by evaluating the cost of each path", 2),
+    17: ("Limited-memory search for large search spaces", 2),
+    18: ("Quiz application using conditional probability", 13),
+    19: ("Draw conditional dependencies between variables", 4),
+    20: ("Regression model for a continuous outcome", 5),
+}
+
+# University practical exam marking (out of 100)
+EXAM_RUBRIC = [("Aim / Principle / Procedure", 20), ("Program", 30), ("Calculation & Results", 30),
+               ("Viva-voce", 10), ("Record", 10)]
 
 # Rubric (out of 100). "auto" components are scored by the grader on every push.
 RUBRIC = [

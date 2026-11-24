@@ -11,7 +11,7 @@ from gradient_edu.labs import COS, LABS, grade_letter  # noqa: E402
 
 
 def test_catalogue_matches_cs3491():
-    assert len(LABS) == 12 and set(COS) == {"CO1", "CO2", "CO3", "CO4", "CO5"}
+    assert len(LABS) == 13 and set(COS) == {"CO1", "CO2", "CO3", "CO4", "CO5"}
     assert {m["co"] for m in LABS.values()} == set(COS)   # every CO has at least one lab
 
 
@@ -43,3 +43,9 @@ def test_cli_demo(tmp_path):
     r = subprocess.run([sys.executable, "-m", "gradient_edu.cli", "demo", "--out", str(tmp_path / "d")],
                        cwd=ROOT, capture_output=True, text=True, timeout=120)
     assert r.returncode == 0, r.stderr
+
+
+def test_every_exam_question_has_a_lab():
+    from gradient_edu.labs import EXAM_QUESTIONS, EXAM_RUBRIC
+    assert len(EXAM_QUESTIONS) == 20 and all(lab in LABS for _, lab in EXAM_QUESTIONS.values())
+    assert sum(m for _, m in EXAM_RUBRIC) == 100
