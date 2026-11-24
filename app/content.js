@@ -160,6 +160,26 @@ window.COURSE = {
     8: "Ensembling techniques", 9: "Clustering algorithms", 10: "EM for Bayesian networks",
     11: "Simple NN models", 12: "Deep learning NN models", 13: "Conditional probability quiz app"
   },
+  // Lab manual = the course's reference repository (record notes, programs, datasets).
+  // Notes and datasets are always visible; programs unlock after the student's lab scores >= unlockPercent.
+  manual: {
+    repo: "https://github.com/Anandharajan/AIML_Lab",
+    unlockPercent: 60,
+    labs: {
+      1: { ex: "Ex.No 1(a), 1(b)", dir: "experiments/Ex01_Search", notes: ["Ex.No1a.txt", "Ex.No1b.txt"], programs: ["bfs.py", "dfs.py"], data: [] },
+      2: { ex: "Ex.No 2(a), 2(b)", dir: "experiments/Ex02_Informed_Search", notes: ["Ex.No2a.txt", "Ex.No2b.txt"], programs: ["a_star.py", "ao_star.py"], data: [] },
+      3: { ex: "Ex.No 3", dir: "experiments/Ex03_Naive_Bayes", notes: ["Ex.No3.txt"], programs: ["naive_bayes_tennis.py"], data: ["tennisdata.csv"] },
+      4: { ex: "Ex.No 4", dir: "experiments/Ex04_Bayesian_Networks", notes: ["Ex.No4.txt"], programs: ["bayesian_network_heart.py"], data: ["heartdisease.csv"] },
+      5: { ex: "Ex.No 5(a), 5(b)", dir: "experiments/Ex05_Regression", notes: ["Ex.No5a.txt", "Ex.No5b.txt"], programs: ["linear_regression_homeprices.py", "logistic_regression_insurance.py"], data: ["homeprices.csv", "insurance_data.csv"] },
+      6: { ex: "Ex.No 6(a), 6(b)", dir: "experiments/Ex06_Trees", notes: ["Ex.No6a.txt", "Ex.No6b.txt"], programs: ["decision_tree_covid.py", "random_forest_covid.py"], data: ["covid19.csv"] },
+      7: { ex: "Ex.No 7", dir: "experiments/Ex07_SVM", notes: ["Ex.No7.txt"], programs: ["svm_covid.py"], data: ["covid19.csv"] },
+      8: { ex: "Ex.No 8", dir: "experiments/Ex08_Ensembling", notes: ["Ex.No8.txt"], programs: ["ensembling_breast_cancer.py"], data: [] },
+      9: { ex: "Ex.No 9(a), 9(b)", dir: "experiments/Ex09_Clustering", notes: ["Ex.No9.txt", "Ex.No9b.txt"], programs: ["kmeans_income.py", "kmeans_gmm_iris.py"], data: ["income.csv"] },
+      10: { ex: "Ex.No 10", dir: "experiments/Ex10_EM_Bayesian", notes: ["Ex.No10.txt"], programs: ["em_coin_toss.py"], data: [] },
+      11: { ex: "Ex.No 11", dir: "experiments/Ex11_Simple_NN", notes: ["Ex.No11.txt"], programs: ["simple_neural_network_digits.py"], data: ["digit.jpg"] },
+      12: { ex: "Ex.No 12", dir: "experiments/Ex12_DeepLearning_CNN", notes: ["Ex.No12.txt"], programs: ["cnn_cellimage.py"], data: ["cellimage/"] }
+    }
+  },
   labSlugs: { 1: "bfs-dfs", 2: "astar", 3: "naive-bayes", 4: "bayes-net", 5: "regression", 6: "trees", 7: "svm",
               8: "ensembles", 9: "clustering", 10: "em-bayes-net", 11: "simple-nn", 12: "deep-nn", 13: "cond-prob-quiz" },
   // University practical exam (April/May 2026, SET 1 numbering): [question, lab that prepares you]

@@ -223,9 +223,28 @@ function lab(n) {
     <div class="row">${invite ? `<a class="btn" href="${invite}" target="_blank" rel="noopener">Start lab</a>`
       : `<button class="btn" disabled title="Teacher will share the invite link">Start lab (link coming)</button>`}
     <button class="btn ghost" onclick="S.done['lab${n}']=true;S.xp+=50;save();toast('+50 XP');go('home')">I've pushed my lab</button></div></div>
+  ${manualCard(n)}
   <div class="card"><h3 style="margin-top:0">Marks (100)</h3><table>
     <tr><td>Hidden tests (correctness)</td><td>50</td></tr><tr><td>Public tests + code quality</td><td>10</td></tr>
     <tr><td>REPORT.md observations</td><td>15</td></tr><tr><td>Viva voce (teacher)</td><td>15</td></tr><tr><td>On-time submission</td><td>10</td></tr></table></div>`;
+}
+
+// ---------- lab manual (reference repo) ----------
+function manualCard(n) {
+  const M = C.manual, m = M && M.labs[n];
+  if (!m) return `<div class="card"><h3 style="margin-top:0">📘 Lab manual</h3><p class="muted">No record note for this lab yet — use the lesson notes and REPORT.md template.</p></div>`;
+  const blob = (p) => `${M.repo}/blob/main/${p}`, tree = (p) => `${M.repo}/tree/main/${p}`;
+  const score = (S.grades || {})[n], unlocked = score != null && score >= M.unlockPercent;
+  const notes = m.notes.map((f) => `<a href="${blob(m.dir + "/" + f)}" target="_blank" rel="noopener">${esc(f)}</a>`).join(" · ");
+  const data = m.data.length ? m.data.map((f) => `<a href="${(f.endsWith("/") ? tree : blob)("datasets/" + f.replace(/\/$/, ""))}" target="_blank" rel="noopener">${esc(f)}</a>`).join(" · ") : "built-in / none";
+  const progs = unlocked
+    ? m.programs.map((f) => `<a href="${blob(m.dir + "/" + f)}" target="_blank" rel="noopener">${esc(f)}</a>`).join(" · ")
+    : `🔒 Unlocks when your Lab ${n} score reaches ${M.unlockPercent}%${score != null ? ` (now ${score}%)` : ""}. <a href="#progress">Load your marks</a> on the Progress page.`;
+  return `<div class="card"><h3 style="margin-top:0">📘 Lab manual · ${esc(m.ex)}</h3><table>
+    <tr><td>Record note (Aim, Procedure)</td><td>${notes}</td></tr>
+    <tr><td>Dataset</td><td>${data}</td></tr>
+    <tr><td>Reference program</td><td>${progs}</td></tr></table>
+    <p class="muted" style="margin-bottom:0">Use the record note for your REPORT.md and lab record. The hidden tests use a different interface and data, so write your own code.</p></div>`;
 }
 
 // ---------- progress / student dashboard ----------
@@ -259,6 +278,9 @@ async function loadGrades() {
       rows.push(r.ok ? Object.assign({ lab: n }, await r.json()) : { lab: n, missing: true });
     } catch (e) { rows.push({ lab: n, missing: true }); }
   }
+  S.grades = S.grades || {};
+  rows.forEach((r) => { if (!r.missing && r.provisional_percent != null) S.grades[r.lab] = Math.max(S.grades[r.lab] || 0, r.provisional_percent); });
+  save();
   renderGrades(rows);
 }
 function demoGrades() {
