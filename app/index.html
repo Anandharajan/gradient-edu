@@ -64,7 +64,31 @@ input[type=range]{width:100%;accent-color:var(--green)}
 .toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--yellow);color:#fff;font-weight:900;
   padding:10px 18px;border-radius:14px;box-shadow:0 4px 0 #E5A800;z-index:9}
 code{background:var(--polar);padding:2px 6px;border-radius:6px}
-@media(max-width:560px){.nav a{margin-left:8px;font-size:12px}.brand span{display:none}}
+html,body{overflow-x:hidden}
+img,iframe,canvas,table{max-width:100%}
+.nav a{cursor:pointer}
+@media(max-width:640px){
+  .top{flex-wrap:wrap;gap:6px 14px;padding:8px 14px}
+  .brand{font-size:22px}
+  .nav{order:3;flex-basis:100%;display:flex;justify-content:space-between;border-top:2px solid var(--swan);padding-top:6px}
+  .nav a{margin-left:0;font-size:13px;padding:6px 4px}
+  .stat{font-size:15px}
+  main{padding:16px 12px 90px}
+  h1{font-size:23px}
+  .unit{flex-wrap:wrap;gap:10px;padding:14px 16px}
+  .unit h2{font-size:20px}
+  .unit .btn{padding:8px 12px;font-size:13px}
+  .card{padding:14px}
+  .btn{padding:11px 16px;font-size:14px}
+  .card .row .btn{flex:1 1 auto;text-align:center}
+  .banner{padding:12px 14px;font-size:16px;gap:10px}
+  .banner span{flex:1;min-width:0}
+  td,th{padding:6px 4px;font-size:14px}
+  code{word-break:break-all}
+  .opt{padding:12px 14px;font-size:15px}
+  .nlabel{max-width:150px}
+}
+@media(max-width:380px){.brand span{display:none}}
 .site-footer{text-align:center;padding:22px 16px 96px;color:var(--wolf);font-weight:700;font-size:14px;border-top:2px solid var(--swan);margin-top:24px}
 </style>
 </head>
