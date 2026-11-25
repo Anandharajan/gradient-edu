@@ -70,3 +70,30 @@ def test_self_serve_discovery(monkeypatch):
     assert collector.discover_collaborator_repos("t", "cs3491-lab") == [("meena", "cs3491-lab-04-bayes-net", 4, "main")]
     assert collector.parse_own_repo_name("cs3491-lab-13-cond-prob-quiz", "cs3491-lab") == 13
     assert collector.parse_own_repo_name("cs3491-lab-04-bayes-net-meena", "cs3491-lab") is None
+
+
+def test_roll_number_linking(tmp_path):
+    import json
+    (tmp_path / "submissions").mkdir()
+    (tmp_path / "roster.csv").write_text("roll_no,name,github,section\n212924106001,AJAY S,,III ECE\n"
+                                          "212924106003,AKSHAYA N,,III ECE\n")
+    def sub(gh, lab, roll, total):
+        r = dict(course="CS3491", lab=lab, student=gh, roll_no=roll, submitted_at="2026-12-01T10:00:00+05:30",
+                 components=dict(hidden=40, quality=10, report=15, viva=None, ontime=10), auto_total=total,
+                 details={"ontime": "on time"})
+        (tmp_path / "submissions" / f"{gh}-{lab}.json").write_text(json.dumps(r))
+    sub("ajay-gh", 1, "212924106001", 75)
+    sub("stranger", 1, "999999999999", 60)
+    data = gradebook.write_all(tmp_path)
+    by = {s["roll_no"]: s for s in data["students"]}
+    assert by["212924106001"]["github"] == "ajay-gh" and by["212924106001"]["labs"][1]["score"] == 75
+    assert by["212924106003"]["github"] == "" and data["not_linked"] == ["212924106003"]
+    assert [u["github"] for u in data["unmatched"]] == ["stranger"]
+    assert "not matched to the roster" in (tmp_path / "DASHBOARD.md").read_text()
+
+
+def test_read_roll_no(tmp_path):
+    (tmp_path / "REPORT.md").write_text("Name: Ajay  ·  Roll no: 212924106001\n## Aim\n")
+    assert grader.read_roll_no(tmp_path) == "212924106001"
+    (tmp_path / "REPORT.md").write_text("Name: <!-- your name -->  ·  Roll no: <!-- roll number -->\n")
+    assert grader.read_roll_no(tmp_path) is None

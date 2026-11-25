@@ -102,6 +102,16 @@ def run_quality(repo):
 REPORT_SECTIONS = ["Aim", "Algorithm", "Observations", "Result"]
 
 
+def read_roll_no(repo):
+    """Roll number the student typed in REPORT.md ('Roll no: 212924106001'); None if missing."""
+    p = Path(repo) / "REPORT.md"
+    if not p.exists():
+        return None
+    m = re.search(r"Roll\s*no\.?\s*[:\-]?\s*(\d{12})", re.sub(r"<!--.*?-->", "", p.read_text(encoding="utf-8"), flags=re.S),
+                  re.I)
+    return m.group(1) if m else None
+
+
 def score_report(repo):
     """Provisional: 15 marks spread over 4 required sections; each needs >= 20 words of your own."""
     p = Path(repo) / "REPORT.md"
@@ -145,7 +155,7 @@ def grade(lab, repo, hidden_path, deadline=None, submitted_at=None, student=None
     auto_total = sum(v for v in comps.values() if v is not None)
     result = dict(
         course="CS3491", lab=lab, lab_title=LABS[lab]["title"], co=LABS[lab]["co"],
-        student=student, commit=commit, submitted_at=submitted_at,
+        student=student, roll_no=read_roll_no(repo), commit=commit, submitted_at=submitted_at,
         components=comps, auto_total=auto_total, auto_max=85,
         provisional_percent=round(100 * auto_total / 85, 1),
         provisional_grade=grade_letter(100 * auto_total / 85),

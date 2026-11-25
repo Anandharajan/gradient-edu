@@ -39,12 +39,36 @@ def load(folder):
     return roster, manual, best
 
 
+def link_accounts(roster, best):
+    """Fill blank roster GitHub names from the roll number students write in REPORT.md.
+    Returns (roster_with_links, unmatched) where unmatched lists submitters not on the roster."""
+    rolls = {s["roll_no"]: s for s in roster}
+    claimed = {}
+    for (gh, _lab), r in sorted(best.items(), key=lambda kv: kv[1].get("submitted_at", "")):
+        roll = r.get("roll_no")
+        if gh and roll in rolls and not rolls[roll].get("github") and roll not in claimed:
+            claimed[roll] = gh
+    linked = []
+    for s in roster:
+        s = dict(s)
+        if not s.get("github") and s["roll_no"] in claimed:
+            s["github"], s["linked"] = claimed[s["roll_no"]], "auto (REPORT.md roll no)"
+        linked.append(s)
+    known = {s["github"].lower() for s in linked if s.get("github")}
+    unmatched = {}
+    for (gh, lab), r in best.items():
+        if gh and gh not in known:
+            unmatched.setdefault(gh, {"github": gh, "roll_no_written": r.get("roll_no") or "", "labs": []})["labs"].append(lab)
+    return linked, sorted(unmatched.values(), key=lambda u: u["github"])
+
+
 def build(folder, practical_max=100):
     roster, manual, best = load(folder)
+    roster, unmatched = link_accounts(roster, best)
     ledger, students = [], []
     for s in roster:
-        gh = s["github"].lower()
-        row = dict(roll_no=s["roll_no"], name=s["name"], github=s["github"], section=s.get("section", ""),
+        gh = (s.get("github") or "").lower()
+        row = dict(roll_no=s["roll_no"], name=s["name"], github=s.get("github", ""), section=s.get("section", ""),
                    labs={}, co={})
         for lab in LABS:
             sub, man = best.get((gh, lab)), manual.get((gh, lab), {})
@@ -98,7 +122,9 @@ def build(folder, practical_max=100):
                                 viva_pending=sum(e["status"] == "viva-pending" for e in subs),
                                 average=round(sum(scored) / len(scored), 1) if scored else None)
     return dict(course=COURSE, cos=COS, labs={k: v["title"] for k, v in LABS.items()},
-                students=students, co_summary=co_summary, lab_summary=lab_summary, ledger=ledger)
+                students=students, co_summary=co_summary, lab_summary=lab_summary, ledger=ledger,
+                unmatched=unmatched,
+                not_linked=[s["roll_no"] for s in roster if not s.get("github")])
 
 
 ICON = {"completed": "✅", "late": "🕒", "viva-pending": "🎤", "pending": "❌"}
@@ -129,6 +155,14 @@ def render_markdown(data):
         L.append(f"| {s['roll_no']} | {s['name']} | " + " | ".join(cells) +
                  f" | {s['completed']}/{len(LABS)} | {s['lab_average']} | {s['grade']} |")
     pending = [(s, n) for s in data["students"] for n in LABS if s["labs"][n]["status"] == "pending"]
+    if data.get("unmatched"):
+        L += ["", f"## ⚠️ Submissions not matched to the roster ({len(data['unmatched'])})", "",
+              "Their REPORT.md roll no is missing or not on the roster. Fix REPORT.md, or add the GitHub name to roster.csv.", "",
+              "| GitHub | Roll no written | Labs |", "|---|---|---|"]
+        L += [f"| {u['github']} | {u['roll_no_written'] or '—'} | {', '.join(str(x) for x in sorted(u['labs']))} |"
+              for u in data["unmatched"]]
+    L += ["", f"GitHub linked: {len(data['students']) - len(data.get('not_linked', []))}/{len(data['students'])} students "
+              "(linked automatically from the roll no in REPORT.md)."]
     L += ["", f"## Follow-up list ({len(pending)} pending lab submissions)", ""]
     by_student = {}
     for s, n in pending:
