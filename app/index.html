@@ -65,6 +65,7 @@ input[type=range]{width:100%;accent-color:var(--green)}
   padding:10px 18px;border-radius:14px;box-shadow:0 4px 0 #E5A800;z-index:9}
 code{background:var(--polar);padding:2px 6px;border-radius:6px}
 @media(max-width:560px){.nav a{margin-left:8px;font-size:12px}.brand span{display:none}}
+.site-footer{text-align:center;padding:22px 16px 96px;color:var(--wolf);font-weight:700;font-size:14px;border-top:2px solid var(--swan);margin-top:24px}
 </style>
 </head>
 <body>
@@ -80,6 +81,7 @@ code{background:var(--polar);padding:2px 6px;border-radius:6px}
   <div class="stat" title="Hearts">❤️ <span id="hearts">5</span></div>
 </div>
 <main id="view"></main>
+<footer class="site-footer">Dr. Anandharajan, Associate Professor, SJCE</footer>
 
 <script src="content.js"></script>
 <script src="config.js"></script>
@@ -226,9 +228,20 @@ function lab(n) {
     <div class="row"><a class="btn" href="${startUrl}" target="_blank" rel="noopener">Start lab</a>
     <button class="btn ghost" onclick="S.done['lab${n}']=true;S.xp+=50;save();toast('+50 XP');go('home')">I've pushed my lab</button></div></div>
   ${manualCard(n)}
+  ${solutionCard(n)}
   <div class="card"><h3 style="margin-top:0">Marks (100)</h3><table>
     <tr><td>Hidden tests (correctness)</td><td>50</td></tr><tr><td>Public tests + code quality</td><td>10</td></tr>
     <tr><td>REPORT.md observations</td><td>15</td></tr><tr><td>Viva voce (teacher)</td><td>15</td></tr><tr><td>On-time submission</td><td>10</td></tr></table></div>`;
+}
+
+// ---------- solution walkthrough videos ----------
+function solutionCard(n) {
+  const vids = (C.solutionVideos || {})[n];
+  if (!vids || !vids.length) return "";
+  const items = vids.map(([t, id]) => `<li><a href="https://www.youtube.com/watch?v=${esc(id)}" target="_blank" rel="noopener">▶ ${esc(t)}</a></li>`).join("");
+  return `<div class="card"><details><summary style="cursor:pointer;font-weight:800;font-size:17px">🎬 Solution walkthroughs — watch after you've tried</summary>
+    <p class="muted">Try the lab yourself first. These videos use different function names and data from the hidden tests, so copied code will not pass — use them to understand, then write your own.</p>
+    <ul style="font-weight:700;line-height:1.9">${items}</ul></details></div>`;
 }
 
 // ---------- lab manual (reference repo) ----------

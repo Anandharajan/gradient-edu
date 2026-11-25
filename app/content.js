@@ -19,13 +19,13 @@ window.COURSE = {
           quiz: [
             { q: "Which is NOT part of a search problem definition?", a: ["Initial state", "Goal test", "Path cost", "Learning rate"], c: 3 },
             { q: "The transition model tells us…", a: ["The result of doing an action in a state", "The cost of the best path", "The heuristic value", "The number of states"], c: 0 } ] },
-        { id: "1.3", title: "Uninformed search: BFS & DFS", video: "", lab: 1,
+        { id: "1.3", title: "Uninformed search: BFS & DFS", video: "YtD2KGRdn3s", lab: 1,
           notes: "BFS expands the shallowest node first using a FIFO queue: complete and optimal for unit step costs, but memory O(b^d). DFS expands the deepest node using a LIFO stack: memory O(bm), but not optimal and can loop without a visited set.",
           quiz: [
             { q: "BFS uses which data structure for the frontier?", a: ["FIFO queue", "LIFO stack", "Priority queue", "Hash map"], c: 0 },
             { q: "Which search is optimal when all step costs are equal?", a: ["DFS", "BFS", "Depth-limited", "Greedy"], c: 1 },
             { q: "DFS memory complexity is…", a: ["O(b^d)", "O(bm)", "O(d)", "O(b)"], c: 1 } ] },
-        { id: "1.4", title: "Heuristic search: A*", video: "", lab: 2,
+        { id: "1.4", title: "Heuristic search: A*", video: "drMd267ub-I", lab: 2,
           notes: "A* orders nodes by f(n) = g(n) + h(n). With an admissible heuristic (never overestimates) tree-search A* is optimal. Memory-bounded variants (IDA*, SMA*) trade time for memory by re-expanding nodes.",
           quiz: [
             { q: "In A*, f(n) =", a: ["g(n)", "h(n)", "g(n) + h(n)", "g(n) × h(n)"], c: 2 },
@@ -49,18 +49,18 @@ window.COURSE = {
         { id: "2.1", title: "Acting under uncertainty", video: "",
           notes: "Agents rarely know the world exactly. Probability summarises uncertainty; decision theory = probability theory + utility theory. Rational agents maximise expected utility.",
           quiz: [{ q: "Decision theory combines probability theory with…", a: ["Utility theory", "Graph theory", "Set theory", "Number theory"], c: 0 }] },
-        { id: "2.2", title: "Bayesian inference", video: "",
+        { id: "2.2", title: "Bayesian inference", video: "HZGCoVF3YvM",
           lab: 13,
           notes: "Bayes' rule: P(H|E) = P(E|H) P(H) / P(E). Conditional probability: P(A|B) = P(A and B) / P(B). It turns causal knowledge P(effect|cause) into diagnostic knowledge P(cause|effect). Try the Bayes slider sandbox, then build your own quiz app in Lab 13!",
           quiz: [
             { q: "In Bayes' rule, P(H) is called the…", a: ["Prior", "Likelihood", "Posterior", "Evidence"], c: 0 },
             { q: "A test is 99% accurate and the disease is rare. A positive result means disease is…", a: ["Certain", "Still fairly unlikely", "Impossible", "Exactly 99% likely"], c: 1 } ] },
-        { id: "2.3", title: "Naive Bayes models", video: "", lab: 3,
+        { id: "2.3", title: "Naive Bayes models", video: "nHIUYwN-5rM", lab: 3,
           notes: "Naive Bayes assumes features are conditionally independent given the class: P(C|x) ∝ P(C) Π P(xi|C). Gaussian NB models each feature per class with a mean and variance. Fast, works well for text and small data.",
           quiz: [
             { q: "The 'naive' assumption is that features are…", a: ["Conditionally independent given the class", "Normally distributed", "Binary", "Equal"], c: 0 },
             { q: "Gaussian NB stores per class and feature a…", a: ["Mean and variance", "Decision threshold", "Weight vector", "Kernel"], c: 0 } ] },
-        { id: "2.4", title: "Bayesian networks", video: "", lab: 4,
+        { id: "2.4", title: "Bayesian networks", video: "tEhveiy_MKk", lab: 4,
           notes: "A Bayesian network is a DAG; each node has a CPT P(X | Parents(X)). The joint distribution factorises as Π P(Xi | Parents(Xi)). Example: Burglary → Alarm ← Earthquake; Alarm → JohnCalls, MaryCalls.",
           quiz: [
             { q: "Each node in a BN stores…", a: ["P(X | Parents(X))", "P(X) only", "The full joint", "A utility"], c: 0 },
@@ -70,7 +70,7 @@ window.COURSE = {
           quiz: [
             { q: "Likelihood weighting is a form of…", a: ["Approximate inference", "Exact inference", "Learning", "Search"], c: 0 },
             { q: "Enumeration on large networks is…", a: ["Exponential in the worst case", "Always linear", "Constant", "Impossible"], c: 0 } ] },
-        { id: "2.6", title: "Causal networks & EM", video: "", lab: 10,
+        { id: "2.6", title: "Causal networks & EM", video: "3oefV-AoP0E", lab: 10,
           notes: "Causal networks support interventions: do(X=x) cuts incoming edges to X. When variables are hidden, Expectation-Maximisation alternates E-step (expected hidden values) and M-step (re-estimate parameters); the likelihood never decreases.",
           quiz: [
             { q: "In EM, the M-step…", a: ["Re-estimates parameters", "Computes expectations", "Prunes the graph", "Adds edges"], c: 0 },
@@ -80,7 +80,7 @@ window.COURSE = {
     {
       n: 3, title: "Supervised Learning", co: "CO3", color: "#FF9600", sandbox: "regression",
       lessons: [
-        { id: "3.1", title: "Linear regression & least squares", video: "", lab: 5,
+        { id: "3.1", title: "Linear regression & least squares", video: "8jazNUpO3lQ", lab: 5,
           notes: "Model y = w·x + b. Least squares minimises Σ(y − ŷ)²; closed form w = (XᵀX)⁻¹Xᵀy. Multiple regression uses many input variables. Bayesian linear regression puts a prior on w and returns a posterior distribution.",
           quiz: [
             { q: "Least squares minimises…", a: ["Sum of squared errors", "Absolute errors", "Number of errors", "Margin"], c: 0 },
@@ -94,12 +94,12 @@ window.COURSE = {
           quiz: [
             { q: "Logistic regression is a…", a: ["Discriminative model", "Generative model", "Clustering method", "Search method"], c: 0 },
             { q: "The sigmoid outputs values in…", a: ["(0, 1)", "(−1, 1)", "[0, ∞)", "Any real"], c: 0 } ] },
-        { id: "3.4", title: "Support vector machines", video: "", lab: 7,
+        { id: "3.4", title: "Support vector machines", video: "HtdhnGp-m74", lab: 7,
           notes: "SVM finds the maximum-margin hyperplane; only support vectors matter. Margin width = 2/‖w‖. Kernels (RBF, polynomial) separate non-linear data by implicitly mapping to higher dimensions.",
           quiz: [
             { q: "SVM maximises the…", a: ["Margin", "Error", "Depth", "Entropy"], c: 0 },
             { q: "For moon-shaped data the best kernel is usually…", a: ["RBF", "Linear", "None", "Identity"], c: 0 } ] },
-        { id: "3.5", title: "Decision trees & random forests", video: "", lab: 6,
+        { id: "3.5", title: "Decision trees & random forests", video: "ok2s1vV9XW0", lab: 6,
           notes: "Trees split on the feature with highest information gain (entropy drop). Deep trees overfit. Random forests average many trees trained on bootstrap samples with random feature subsets, reducing variance.",
           quiz: [
             { q: "Entropy of [1,1,0,0] is…", a: ["1 bit", "0", "0.5", "2 bits"], c: 0 },
@@ -109,12 +109,12 @@ window.COURSE = {
     {
       n: 4, title: "Ensembles & Unsupervised", co: "CO4", color: "#CE82FF", sandbox: "kmeans",
       lessons: [
-        { id: "4.1", title: "Combining learners & voting", video: "", lab: 8,
+        { id: "4.1", title: "Combining learners & voting", video: "eLt4a8-316E", lab: 8,
           notes: "Model combination: voting (majority/average), bagging (bootstrap + average, reduces variance), boosting (sequentially focus on mistakes, e.g. AdaBoost, reduces bias) and stacking (a meta-learner combines base predictions).",
           quiz: [
             { q: "AdaBoost increases the weight of…", a: ["Misclassified samples", "Correct samples", "All features", "Outliers only"], c: 0 },
             { q: "Stacking uses a…", a: ["Meta-learner", "Single tree", "Kernel", "Heuristic"], c: 0 } ] },
-        { id: "4.2", title: "K-means clustering", video: "", lab: 9,
+        { id: "4.2", title: "K-means clustering", video: "4b5d3muPQmA", lab: 9,
           notes: "Repeat: assign each point to the nearest centroid, then move each centroid to the mean of its points. Minimises within-cluster squared distance (inertia). Needs k; sensitive to initialisation (use k-means++).",
           quiz: [
             { q: "K-means minimises…", a: ["Within-cluster squared distance", "Number of clusters", "Margin", "Entropy"], c: 0 },
@@ -146,7 +146,7 @@ window.COURSE = {
           quiz: [
             { q: "ReLU(−3) =", a: ["0", "−3", "3", "1"], c: 0 },
             { q: "Vanishing gradients are worst with…", a: ["Saturating sigmoids", "ReLU", "Batch norm", "Dropout"], c: 0 } ] },
-        { id: "5.5", title: "Regularisation: dropout & batch norm", video: "",
+        { id: "5.5", title: "Regularisation: dropout & batch norm", video: "mqrR5IEOx_Q",
           notes: "Dropout randomly zeroes units during training (scale by 1/(1−p)). Batch normalisation standardises layer inputs per mini-batch then scales/shifts. L2 regularisation penalises large weights. Tune hyperparameters on validation data.",
           quiz: [
             { q: "Dropout is used to reduce…", a: ["Overfitting", "Training data", "Bias only", "Model size on disk"], c: 0 },
@@ -179,6 +179,22 @@ window.COURSE = {
       11: { ex: "Ex.No 11", dir: "experiments/Ex11_Simple_NN", notes: ["Ex.No11.txt"], programs: ["simple_neural_network_digits.py"], data: ["digit.jpg"] },
       12: { ex: "Ex.No 12", dir: "experiments/Ex12_DeepLearning_CNN", notes: ["Ex.No12.txt"], programs: ["cnn_cellimage.py"], data: ["cellimage/"] }
     }
+  },
+  // "Watch after you've tried" solution walkthroughs (third-party YouTube; teacher-curated). Shown on lab pages.
+  solutionVideos: {
+    1: [["BFS in Python", "-uR7BSfNJko"], ["DFS in Python", "QVcsSaGeSH0"]],
+    2: [["A* pathfinding in Python (Tech With Tim)", "JtiK0DOeI4A"]],
+    3: [["Naive Bayes spam classifier (codebasics)", "nHIUYwN-5rM"]],
+    4: [["pgmpy: Bayesian networks in Python (SciPy talk)", "Vcmjqx7lht0"]],
+    5: [["Linear regression from scratch", "ltXSoduiVwY"]],
+    6: [["Decision tree from scratch", "sgQAhG5Q7iY"]],
+    7: [["SVM from scratch", "T9UcK-TxQGw"]],
+    8: [["Ensemble methods in scikit-learn", "NqdyfMbVo1Q"], ["Stacking classifier", "bgylj1yX5vs"]],
+    9: [["K-means from scratch", "lX-3nGHDhQg"], ["K-means with sklearn (codebasics)", "EItlUEPCIzM"]],
+    10: [["EM algorithm from scratch in Python", "DqMB_aqd6HM"]],
+    11: [["Perceptron from scratch", "aOEoxyA4uXU"], ["XOR neural network without ML libraries", "nusyA8Ysb4Q"]],
+    12: [["Scaling, dropout and batch norm in Keras", "wJ60luXn5Ns"]],
+    13: [["The medical test paradox (3Blue1Brown)", "lG4VkPoG3ko"]]
   },
   labSlugs: { 1: "bfs-dfs", 2: "astar", 3: "naive-bayes", 4: "bayes-net", 5: "regression", 6: "trees", 7: "svm",
               8: "ensembles", 9: "clustering", 10: "em-bayes-net", 11: "simple-nn", 12: "deep-nn", 13: "cond-prob-quiz" },
